@@ -15,17 +15,16 @@ def _users():
 def create_user():
     form = UserForm()
     if request.method == 'POST':
-        email= form.email.data
-        q = db.session.query(User).filter(User.email == email)
-        user = q.first()
-        if user is None:
-            if form.validate_on_submit():
+        if form.validate_on_submit():
+            q = db.session.query(User).filter(User.email == form.email.data)
+            user = q.first()
+            if user is None:
                 new_user = User()
                 form.populate_obj(new_user)
                 new_user.set_password(form.password.data)
                 db.session.add(new_user)
                 db.session.commit()
                 return redirect('/')
-        else: form.email.errors=["Email already exists"]
+            else: form.email.errors=["Email already exists"]
 
     return render_template('create_user.html', form=form)
