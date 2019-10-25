@@ -4,4 +4,4 @@
 /logout
 /stories
 /stories/like/<authorid>/<storyid>
-/user
+/users
