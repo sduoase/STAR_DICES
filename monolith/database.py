@@ -11,7 +11,7 @@ db = SQLAlchemy()
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    email = db.Column(db.Unicode(128), nullable=False)
+    email = db.Column(db.Unicode(128), unique=True, nullable=False)
     firstname = db.Column(db.Unicode(128))
     lastname = db.Column(db.Unicode(128))
     password = db.Column(db.Unicode(128))
