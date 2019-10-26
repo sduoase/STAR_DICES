@@ -1,3 +1,6 @@
+# Documentation
+* [API doc](https://docs.google.com/spreadsheets/d/1B6I-gnoz-LEUB3Nxu2pnc9xj-iwYfOphf2pOYdGjRVQ/edit?usp=sharing) 
+
 # Clone repository
 `git clone https://github.com/sduoase/STAR_DICES.git`
 
