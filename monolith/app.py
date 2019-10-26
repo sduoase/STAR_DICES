@@ -1,9 +1,13 @@
+import datetime
+import json
 import os
-from flask import Flask
-from monolith.database import db, User, Story
+
+from flask import Flask, jsonify
+
+from monolith.database import db, User, Story, Dice, retrieve_dice_set, store_dice_set
 from monolith.views import blueprints
 from monolith.auth import login_manager
-import datetime
+from monolith.classes import Die, DiceSet
 
 def create_app():
     app = Flask(__name__)
@@ -19,8 +23,8 @@ def create_app():
     login_manager.init_app(app)
     db.create_all(app=app)
 
-    # create a first admin user
     with app.app_context():
+        # Create first admin user.
         q = db.session.query(User).filter(User.email == 'example@example.com')
         user = q.first()
         if user is None:
@@ -44,6 +48,16 @@ def create_app():
             print(example)
             db.session.add(example)
             db.session.commit()
+
+        # Create default dice set.
+        dice_set = retrieve_dice_set()
+        if dice_set is None:
+            die1 = Die.Die(['Dog', 'Cat', 'Horse'])
+            die2 = Die.Die(['Jump', 'Sleep', 'Run'])
+            die3 = Die.Die(['Summer', 'Winter', 'Spring', 'Fall'])
+            die4 = Die.Die(['House', 'Mountain'])
+            dice_set = DiceSet.DiceSet([die1, die2, die3, die4])
+            store_dice_set(dice_set)
 
     return app
 
