@@ -13,7 +13,7 @@ def _users():
 
 @users.route('/signup', methods=['GET', 'POST'])
 def create_user():
-    if current_user is not None and hasattr(current_user, 'id'):
+    if not current_user.is_anonymous:
         return redirect("/", code=302)
     form = UserForm()
     if request.method == 'POST' and form.validate_on_submit():
@@ -26,5 +26,5 @@ def create_user():
                 db.session.add(new_user)
                 db.session.commit()
                 return redirect('/')
-            else: form.email.errors=["Email already exists"]
+            else: form.email.errors=["Seems like this email is already used"]
     return render_template('create_user.html', form=form)
