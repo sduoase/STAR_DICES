@@ -13,6 +13,7 @@ def _stories(message=''):
     return render_template("stories.html", message=message, stories=allstories)
 
 @stories.route('/story/<story_id>')
+@login_required
 def _story(story_id, message=''):
     story = Story.query.filter_by(id=story_id).first()
     if story is None:
