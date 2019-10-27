@@ -4,6 +4,7 @@ from monolith.auth import admin_required, current_user
 from flask_login import (current_user, login_user, logout_user,
                          login_required)
 from monolith.forms import UserForm
+from  sqlalchemy.sql.expression import func
 
 stories = Blueprint('stories', __name__)
 
@@ -18,6 +19,17 @@ def _story(story_id, message=''):
     story = Story.query.filter_by(id=story_id).first()
     if story is None:
         message = 'Story not found'
+    return render_template("story.html", message=message, story=story,
+                           like_it_url="/stories/like/",
+                           dislike_it_url="/stories/dislike/")
+
+@stories.route('/random_story')
+@login_required
+def _random_story(message=''):
+    story = Story.query.order_by(func.random()).first()
+    if story is None:
+        # Should not happen.
+        message = 'Something went wrong'
     return render_template("story.html", message=message, story=story,
                            like_it_url="/stories/like/",
                            dislike_it_url="/stories/dislike/")
