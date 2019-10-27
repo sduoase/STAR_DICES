@@ -18,8 +18,8 @@ def _story(story_id, message=''):
     if story is None:
         message = 'Story not found'
     return render_template("story.html", message=message, story=story,
-                           like_it_url_="http::/127.0.0.1:5000/stories/like/",
-                           dislike_it_url_="http::/127.0.0.1:5000/stories/dislike/")
+                           like_it_url_="/stories/like/",
+                           dislike_it_url_="/stories/dislike/")
 
 @stories.route('/stories/like/<authorid>/<storyid>')
 @login_required
