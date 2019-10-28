@@ -18,7 +18,7 @@ class UserForm(FlaskForm):
     lastname = f.StringField('lastname', validators=[DataRequired()])
     password = f.PasswordField('password', validators=[DataRequired(),
                                                        Length(MIN_CHAR_PWD,
-                                                              MAX_CHAR_STORY,
+                                                              MAX_CHAR_PWD,
                                                               message="At least "+str(MIN_CHAR_PWD)+" characters..")
                                                        ])
     dateofbirth = f.DateField('dateofbirth', format='%d/%m/%Y')
