@@ -35,18 +35,39 @@ def _random_story(message=''):
                            like_it_url="/stories/like/",
                            dislike_it_url="/stories/dislike/")
 
-@stories.route('/stories/like/<authorid>/<storyid>')
+@stories.route('/stories/like/<storyid>')
 @login_required
 def _like(authorid, storyid):
     q = Like.query.filter_by(liker_id=current_user.id, story_id=storyid)
-    if q.first() != None:
+    story = Story.query.filter_by(id=story_id).first()
+    if q.first() == None:
         new_like = Like()
         new_like.liker_id = current_user.id
         new_like.story_id = storyid
-        new_like.liked_id = authorid
+        new_like.liked_id = story.author_id
         db.session.add(new_like)
         db.session.commit()
-        message = ''
+        message = 'Like added!'
     else:
         message = 'You\'ve already liked this story!'
     return _stories(message)
+
+@stories.route('/stories/dislike/<storyid>')
+@login_required
+def _dislike(authorid, storyid):
+    q = Like.query.filter_by(disliker_id=current_user.id, story_id=storyid)
+    story = Story.query.filter_by(id=story_id).first()
+    if q.first() == None:
+        new_dislike = Dislike()
+        new_dislike.disliker_id = current_user.id
+        new_dislike.story_id = storyid
+        new_dislike.disliked_id = story.author_id
+        db.session.add(new_dislike)
+        db.session.commit()
+        message = 'Dislike added!'
+    else:
+        message = 'You\'ve already disliked this story!'
+    return _stories(message)
+    
+    
+    

@@ -5,10 +5,10 @@
         <p>{{message}}</p>
     {% else %}
         <p>{{story.text}}</p>
-        <p>Likes: {{story.likes}} ({{story.date}})</p>
+        <p>Likes: {{story.likes}} Dislikes: {{story.dislikes}} ({{story.date}})</p>
         {% if current_user.is_authenticated %}
-            <a href="{{like_it_url}}{{story.author_id}}/{{story.id}}">Like it!</a>
-            <a href="{{dislike_it_url}}{{story.author_id}}/{{story.id}}">Dislike it!</a>
+            <a href="{{like_it_url}}{{story.id}}">Like it!</a>
+            <a href="{{dislike_it_url}}{{story.id}}">Dislike it!</a>
         {% endif %}
     {% endif %}
   </body>

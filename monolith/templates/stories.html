@@ -4,12 +4,13 @@
     <h5>{{message}}</h5>
     <ul>
       {% for story in stories: %}
-      <li>
-      "{{story.text}}"    Likes: {{story.likes}} ({{story.date}})
-      {% if current_user.is_authenticated %}
-      <a href="{{like_it_url}}{{story.author.id}}/{{story.id}}">Like it!</a>
-      {% endif %}
-      </li>
+          <li>
+          "{{story.text}}"    Likes: {{story.likes}} Dislikes: {{story.dislikes}} ({{story.date}})
+          {% if current_user.is_authenticated %}
+              <a href="{{like_it_url}}{{story.id}}">Like it!</a>
+              <a href="{{dislike_it_url}}{{story.id}}">Dislike it!</a>
+          {% endif %}
+          </li>
       {% endfor %}
     </ul>
   </body>
