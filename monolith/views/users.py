@@ -1,5 +1,7 @@
 from flask import Blueprint, redirect, render_template, request, url_for
-from monolith.database import db, User
+from flask_login import (current_user, login_user, logout_user,
+                         login_required)
+from monolith.database import db, User, Follow
 from monolith.auth import admin_required, current_user
 from monolith.forms import UserForm, LoginForm
 from sqlalchemy.exc import IntegrityError
@@ -30,3 +32,26 @@ def create_user():
             form.message="Seems like this email is already used"
             
     return render_template('create_user.html', form=form)
+
+
+@users.route('/wall/<author_id>/follow', methods=['GET'])
+@login_required
+def follow(author_id):
+    db.session.add(Follow(author_id, current_user.id))
+    message = ''
+    try:
+        db.session.commit()
+        message = "Following!"
+    except IntegrityError:
+        message = "Already following!"
+    
+    return render_template('follow.html', message = message)
+
+@users.route('/wall/<author_id>/unfollow', methods=['GET'])
+@login_required
+def unfollow(author_id):
+    Follow.query.filter(Follow.user_id == author_id, Follow.followed_by_id == current_user.id).delete()
+
+    return render_template('follow.html', message = "Unfollowed!")
+
+    

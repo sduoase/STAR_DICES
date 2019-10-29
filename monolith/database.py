@@ -72,6 +72,20 @@ class Like(db.Model):
 
     marked = db.Column(db.Boolean, default = False) # True iff it has been counted in Story.likes 
 
+class Follow(db.Model):
+    __tablename__ = 'follow'
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    followee = relationship('User', foreign_keys='Follow.user_id')
+
+    followed_by_id= db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    follower = relationship('User', foreign_keys='Follow.user_id')
+
+    def __init__(self, user, follower, *args, **kw):
+        self.user_id = user
+        self.followed_by_id = follower
+
+
 class Dice(db.Model):
     __tablename__ = 'dice_set'
 

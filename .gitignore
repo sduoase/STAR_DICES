@@ -110,3 +110,8 @@ venv.bak/
 monolith/storytellers.db
 variables.sh
 .vscode/
+
+
+.DS_Store
+
+
