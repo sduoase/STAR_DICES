@@ -67,6 +67,31 @@ def _dislike(story_id):
     else:
         message = 'You\'ve already disliked this story!'
     return _stories(message)
+
+@stories.route('/story/<story_id>/remove_like')
+@login_required
+def _remove_like(story_id):
+    l = Like.query.filter_by(liker_id=current_user.id, story_id=story_id).first()
+    if l == None:
+        message = 'You have to like it first!'
+    else:
+        db.session.delete(l)
+        db.session.commit()
+        message = 'You removed your like'
+    return _stories(message)
+    
+    
+@stories.route('/story/<story_id>/remove_dislike')
+@login_required
+def _remove_dislike(story_id):
+    d = Dislike.query.filter_by(disliker_id=current_user.id, story_id=story_id).first()
+    if d == None:
+        message = 'You didn\'t dislike it yet..'
+    else:
+        db.session.delete(d)
+        db.session.commit()
+        message = 'You removed your dislike!'
+    return _stories(message)
     
     
     
