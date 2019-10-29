@@ -10,8 +10,17 @@ stories = Blueprint('stories', __name__)
 @stories.route('/stories')
 def _stories(message=''):
     allstories = db.session.query(Story)
-    return render_template("stories.html", message=message, stories=allstories, like_it_url="http://127.0.0.1:5000/stories/like/")
+    return render_template("stories.html", message=message, stories=allstories)
 
+@stories.route('/story/<story_id>')
+@login_required
+def _story(story_id, message=''):
+    story = Story.query.filter_by(id=story_id).first()
+    if story is None:
+        message = 'Story not found'
+    return render_template("story.html", message=message, story=story,
+                           like_it_url="/stories/like/",
+                           dislike_it_url="/stories/dislike/")
 
 @stories.route('/stories/like/<authorid>/<storyid>')
 @login_required
