@@ -1,10 +1,8 @@
 from flask import Blueprint, redirect, render_template, request, url_for
 from flask_login import (current_user, login_user, logout_user,
                          login_required)
-from monolith.database import db, User, Follow
+from monolith.database import db, User, Story, Follow
 from monolith.auth import admin_required, current_user
-from monolith.forms import UserForm, LoginForm
-from sqlalchemy.exc import IntegrityError
 
 users = Blueprint('users', __name__)
 
@@ -13,6 +11,11 @@ def _users():
     users = db.session.query(User)
     return render_template("users.html", users=users)
 
+@users.route('/my_wall')
+@login_required
+def index():
+    stories = db.session.query(Story).filter(Story.author_id == current_user.id)
+    return render_template("mywall.html", stories=stories)
 
 @users.route('/signup', methods=['GET', 'POST'])
 def create_user():
@@ -53,5 +56,3 @@ def unfollow(author_id):
     Follow.query.filter(Follow.user_id == author_id, Follow.followed_by_id == current_user.id).delete()
 
     return render_template('follow.html', message = "Unfollowed!")
-
-    
