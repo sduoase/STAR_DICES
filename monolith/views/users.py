@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template, request, url_for
+from flask import Blueprint, redirect, render_template, request, url_for, abort
 from flask_login import (current_user, login_user, logout_user,
                          login_required)
 from monolith.database import db, User, Story, Follow
@@ -14,9 +14,38 @@ def _users():
 
 @users.route('/my_wall')
 @login_required
-def index():
+def my_wall():
     stories = db.session.query(Story).filter(Story.author_id == current_user.id)
     return render_template("mywall.html", stories=stories)
+
+@users.route('/wall/<author_id>', methods=['GET'])
+@login_required
+def wall(author_id):
+    author = User.query.filter_by(id = author_id).first()
+    if author is None:
+        abort(404)
+    stories = Story.query.filter_by(author_id = author_id)
+    return render_template("wall.html", stories=stories, author=author)
+
+@users.route('/signup', methods=['GET', 'POST'])
+def create_user():
+    if not current_user.is_anonymous:
+        return redirect("/", code=302)
+    form = UserForm()
+    if request.method == 'POST' and form.validate_on_submit():
+        new_user = User()
+        form.populate_obj(new_user)
+        new_user.set_password(form.password.data)
+        db.session.add(new_user)
+        try:
+            db.session.commit()
+            return redirect(url_for("auth.login", message="You have been sucessfully registered!"))
+        except IntegrityError:
+            db.session.rollback()
+            form.message="Seems like this email is already used"
+            
+    return render_template('create_user.html', form=form)
+
 
 @users.route('/wall/<author_id>/follow', methods=['GET'])
 @login_required
