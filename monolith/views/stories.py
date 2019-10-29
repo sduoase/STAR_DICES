@@ -8,8 +8,10 @@ from  sqlalchemy.sql.expression import func
 
 stories = Blueprint('stories', __name__)
 
-@stories.route('/stories')
+@stories.route('/')
 def _stories(message=''):
+    if current_user.is_anonymous:
+        return redirect("/login", code=302)
     allstories = db.session.query(Story)
     return render_template("stories.html", message=message, stories=allstories)
 
