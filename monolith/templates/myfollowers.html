@@ -1,0 +1,12 @@
+<html>
+  <body>
+    <h1>My Followers:</h1>
+    <ul>
+      {% for follower in followers: %}
+      <li>
+      <a href="/wall/{{follower.id}}">{{follower.firstname}} {{follower.lastname}}</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>
