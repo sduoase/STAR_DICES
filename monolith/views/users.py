@@ -35,5 +35,6 @@ def follow(author_id):
 @login_required
 def unfollow(author_id):
     Follow.query.filter(Follow.user_id == author_id, Follow.followed_by_id == current_user.id).delete()
+    db.session.commit()
 
     return render_template('follow.html', message = "Unfollowed!")
