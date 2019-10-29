@@ -1,8 +1,9 @@
 from flask import Blueprint, redirect, render_template, request
-from monolith.database import db, Story, Like
+from monolith.database import db, Story, Like, retrieve_dice_set
 from monolith.auth import admin_required, current_user
 from flask_login import (current_user, login_user, logout_user,
                          login_required)
+from monolith.forms import UserForm
 from  sqlalchemy.sql.expression import func
 
 stories = Blueprint('stories', __name__)
@@ -14,6 +15,7 @@ def _stories(message=''):
     allstories = db.session.query(Story)
     return render_template("stories.html", message=message, stories=allstories)
 
+
 @stories.route('/story/<story_id>')
 @login_required
 def _story(story_id, message=''):
@@ -23,6 +25,7 @@ def _story(story_id, message=''):
     return render_template("story.html", message=message, story=story,
                            like_it_url="/stories/like/",
                            dislike_it_url="/stories/dislike/")
+
 
 @stories.route('/random_story')
 @login_required
@@ -34,6 +37,7 @@ def _random_story(message=''):
     return render_template("story.html", message=message, story=story,
                            like_it_url="/stories/like/",
                            dislike_it_url="/stories/dislike/")
+
 
 @stories.route('/stories/like/<authorid>/<storyid>')
 @login_required
@@ -50,3 +54,12 @@ def _like(authorid, storyid):
     else:
         message = 'You\'ve already liked this story!'
     return _stories(message)
+
+
+@stories.route('/stories/new_story')
+@login_required
+def new_stories(authorid):
+    dice_set = retrieve_dice_set()
+    message = dice_set.theme
+    # TODO complete
+    return render_template()
