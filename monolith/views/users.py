@@ -38,3 +38,8 @@ def unfollow(author_id):
     db.session.commit()
 
     return render_template('follow.html', message = "Unfollowed!")
+
+@users.route('/my_wall/followers', methods=['GET'])
+@login_required
+def my_followers():
+    return render_template('myfollowers.html', followers = db.session.query(User).join(Follow, User.id == Follow.followed_by_id).filter(Follow.user_id == current_user.id).filter(Follow.followed_by_id != current_user.id).all())
