@@ -1,12 +1,16 @@
 # encoding: utf8
-from werkzeug.security import generate_password_hash, check_password_hash
-import enum
-from sqlalchemy.orm import relationship
 import datetime as dt
+import enum
+import json
+
+from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy.orm import relationship
 from flask_sqlalchemy import SQLAlchemy
+from monolith.classes import Die, DiceSet
 
 
 db = SQLAlchemy()
+
 
 class User(db.Model):
     __tablename__ = 'user'
@@ -67,3 +71,29 @@ class Like(db.Model):
     liker = relationship('User', foreign_keys='Like.liker_id')
 
     marked = db.Column(db.Boolean, default = False) # True iff it has been counted in Story.likes 
+
+class Dice(db.Model):
+    __tablename__ = 'dice_set'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    serialized_dice_set = db.Column(db.Unicode(1000), nullable=False)
+
+def _deserialize_dice_set(json_dice_set):
+    dice_set = json.loads(json_dice_set)
+    test = DiceSet.DiceSet([Die.Die(dice) for dice in dice_set])
+    return test
+
+# At the moment we handle only 1 dice set. In the future more will be available.
+def retrieve_dice_set():
+    dice = db.session.query(Dice).first()
+    if dice is None:
+        return None
+
+    json_dice_set = dice.serialized_dice_set
+    return _deserialize_dice_set(json_dice_set)
+
+def store_dice_set(dice_set):
+    db_entry = Dice()
+    db_entry.serialized_dice_set = json.dumps(dice_set.serialize())
+    db.session.add(db_entry)
+    db.session.commit()
