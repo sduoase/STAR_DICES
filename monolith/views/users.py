@@ -3,6 +3,7 @@ from flask_login import (current_user, login_user, logout_user,
                          login_required)
 from monolith.database import db, User, Story, Follow
 from monolith.auth import admin_required, current_user
+from sqlalchemy.exc import IntegrityError
 
 users = Blueprint('users', __name__)
 
@@ -16,26 +17,6 @@ def _users():
 def index():
     stories = db.session.query(Story).filter(Story.author_id == current_user.id)
     return render_template("mywall.html", stories=stories)
-
-@users.route('/signup', methods=['GET', 'POST'])
-def create_user():
-    if not current_user.is_anonymous:
-        return redirect("/", code=302)
-    form = UserForm()
-    if request.method == 'POST' and form.validate_on_submit():
-        new_user = User()
-        form.populate_obj(new_user)
-        new_user.set_password(form.password.data)
-        db.session.add(new_user)
-        try:
-            db.session.commit()
-            return redirect(url_for("auth.login", message="You have been sucessfully registered!"))
-        except IntegrityError:
-            db.session.rollback()
-            form.message="Seems like this email is already used"
-            
-    return render_template('create_user.html', form=form)
-
 
 @users.route('/wall/<author_id>/follow', methods=['GET'])
 @login_required
