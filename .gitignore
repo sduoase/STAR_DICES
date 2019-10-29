@@ -109,3 +109,4 @@ venv.bak/
 # personal
 monolith/storytellers.db
 variables.sh
+.vscode/
