@@ -1,8 +1,9 @@
-from flask import Blueprint, redirect, render_template, request, abort
-from monolith.database import db, Story, Like, Dislike
+from flask import Blueprint, redirect, render_template, request
+from monolith.database import db, Story, Like, retrieve_dice_set
 from monolith.auth import admin_required, current_user
 from flask_login import (current_user, login_user, logout_user,
                          login_required)
+from monolith.forms import UserForm
 from  sqlalchemy.sql.expression import func
 
 stories = Blueprint('stories', __name__)
@@ -15,7 +16,8 @@ def _stories(message=''):
     return render_template("stories.html", message=message, stories=allstories,
                             url="/story/")
 
-@stories.route('/story/<int:story_id>')
+
+@stories.route('/story/<story_id>')
 @login_required
 def _story(story_id, message=''):
     story = Story.query.filter_by(id=story_id).first()
@@ -39,6 +41,7 @@ def _delete_story(story_id):
         message = 'Story sucessfully deleted'
     return render_template("message.html", message=message)
 
+
 @stories.route('/random_story')
 @login_required
 def _random_story(message=''):
@@ -49,7 +52,8 @@ def _random_story(message=''):
     return render_template("story.html", message=message, story=story,
                            url="/story/", current_user=current_user)
 
-@stories.route('/story/<int:story_id>/like')
+
+@stories.route('/stories/like/<authorid>/<storyid>')
 @login_required
 def _like(story_id):
     story = Story.query.filter_by(id=story_id).first()
@@ -70,55 +74,13 @@ def _like(story_id):
         message = 'Like added!'
     else:
         message = 'You\'ve already liked this story!'
-    return _story(story_id, message)
+    return _stories(message)
 
-@stories.route('/story/<int:story_id>/dislike')
-@login_required
-def _dislike(story_id):
-    story = Story.query.filter_by(id=story_id).first()
-    if story is None:
-        abort(404)
 
-    q = Dislike.query.filter_by(disliker_id=current_user.id, story_id=story_id)
-    if q.first() is None:
-        new_dislike = Dislike()
-        new_dislike.disliker_id = current_user.id
-        new_dislike.story_id = story_id
-        # remove like, if present
-        l = Like.query.filter_by(liker_id=current_user.id, story_id=story_id).first()
-        if l is not None:
-            db.session.delete(l)
-        db.session.add(new_dislike)
-        db.session.commit()
-        message = 'Dislike added!'
-    else:
-        message = 'You\'ve already disliked this story!'
-    return _story(story_id, message)
-
-@stories.route('/story/<int:story_id>/remove_like')
+@stories.route('/stories/new_story')
 @login_required
-def _remove_like(story_id):
-    l = Like.query.filter_by(liker_id=current_user.id, story_id=story_id).first()
-    if l is None:
-        message = 'You have to like it first!'
-    else:
-        db.session.delete(l)
-        db.session.commit()
-        message = 'You removed your like'
-    return _story(story_id, message)
-    
-    
-@stories.route('/story/<int:story_id>/remove_dislike')
-@login_required
-def _remove_dislike(story_id):
-    d = Dislike.query.filter_by(disliker_id=current_user.id, story_id=story_id).first()
-    if d is None:
-        message = 'You didn\'t dislike it yet..'
-    else:
-        db.session.delete(d)
-        db.session.commit()
-        message = 'You removed your dislike!'
-    return _story(story_id, message)
-    
-    
-    
+def new_stories(authorid):
+    dice_set = retrieve_dice_set()
+    message = dice_set.theme
+    # TODO complete
+    return render_template()
