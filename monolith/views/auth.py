@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, request
+from flask import Blueprint, render_template, redirect, request, url_for
 from flask_login import (current_user, login_user, logout_user,
                          login_required)
 
@@ -9,6 +9,8 @@ auth = Blueprint('auth', __name__)
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
+    if not current_user.is_anonymous:
+        return redirect("/", code=302)
     form = LoginForm()
     if len(request.args)>0 :
         message= request.args.get('message', None)
@@ -19,10 +21,11 @@ def login():
         email, password = form.data['email'], form.data['password']
         q = db.session.query(User).filter(User.email == email)
         user = q.first()
-        print(q.first().id)
         if user is not None and user.authenticate(password):
             login_user(user)
             return redirect('/')
+        else:
+            return redirect(url_for('auth.login', message="User or Password not correct!"))
     return render_template('login.html', form=form)
 
 
