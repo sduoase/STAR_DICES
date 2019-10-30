@@ -3,7 +3,8 @@
     <h1>Story</h1>
     {% if message %}
         <p>{{message}}</p>
-    {% else %}
+    {% endif %}
+    {% if story %}
         <p>{{story.text}}</p>
         <p>Likes: {{story.likes}} Dislikes: {{story.dislikes}} ({{story.date}})</p>
         <a href="{{url}}{{story.id}}/like">Like it!</a>

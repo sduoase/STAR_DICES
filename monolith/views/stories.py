@@ -53,7 +53,7 @@ def _like(story_id):
         message = 'Like added!'
     else:
         message = 'You\'ve already liked this story!'
-    return _stories(message)
+    return _story(story_id, message)
 
 @stories.route('/story/<story_id>/dislike')
 @login_required
@@ -74,7 +74,7 @@ def _dislike(story_id):
         message = 'Dislike added!'
     else:
         message = 'You\'ve already disliked this story!'
-    return _stories(message)
+    return _story(story_id, message)
 
 @stories.route('/story/<story_id>/remove_like')
 @login_required
@@ -86,7 +86,7 @@ def _remove_like(story_id):
         db.session.delete(l)
         db.session.commit()
         message = 'You removed your like'
-    return _stories(message)
+    return _story(story_id, message)
     
     
 @stories.route('/story/<story_id>/remove_dislike')
@@ -99,7 +99,7 @@ def _remove_dislike(story_id):
         db.session.delete(d)
         db.session.commit()
         message = 'You removed your dislike!'
-    return _stories(message)
+    return _story(story_id, message)
     
     
     
