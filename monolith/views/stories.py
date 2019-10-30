@@ -44,6 +44,10 @@ def _like(story_id):
         new_like.liker_id = current_user.id
         new_like.story_id = story_id
         new_like.liked_id = story.author_id
+        # remove dislike, if present
+        d = Dislike.query.filter_by(disliker_id=current_user.id, story_id=story_id).first()
+        if d is not None: 
+            db.session.delete(d)
         db.session.add(new_like)
         db.session.commit()
         message = 'Like added!'
@@ -61,6 +65,10 @@ def _dislike(story_id):
         new_dislike.disliker_id = current_user.id
         new_dislike.story_id = story_id
         new_dislike.disliked_id = story.author_id
+        # remove like, if present
+        l = Like.query.filter_by(liker_id=current_user.id, story_id=story_id).first()
+        if l is not None:
+            db.session.delete(l)
         db.session.add(new_dislike)
         db.session.commit()
         message = 'Dislike added!'
