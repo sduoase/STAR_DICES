@@ -6,12 +6,10 @@
     {% else %}
         <p>{{story.text}}</p>
         <p>Likes: {{story.likes}} Dislikes: {{story.dislikes}} ({{story.date}})</p>
-        {% if current_user.is_authenticated %}
-            <a href="{{url}}{{story.id}}/like">Like it!</a>
-            <a href="{{url}}{{story.id}}/dislike">Dislike it!</a>
-            <a href="{{url}}{{story.id}}/remove_like">Remove your like</a>
-            <a href="{{url}}{{story.id}}/remove_dislike">Remove your dislike</a>
-        {% endif %}
+        <a href="{{url}}{{story.id}}/like">Like it!</a>
+        <a href="{{url}}{{story.id}}/dislike">Dislike it!</a>
+        <a href="{{url}}{{story.id}}/remove_like">Remove your like</a>
+        <a href="{{url}}{{story.id}}/remove_dislike">Remove your dislike</a>
     {% endif %}
   </body>
 </html>
