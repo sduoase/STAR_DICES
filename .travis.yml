@@ -7,4 +7,4 @@ install:
   - python setup.py develop
 # command to run tests
 script:
-  - pytest
+  - python -m unittest
