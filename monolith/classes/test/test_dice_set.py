@@ -26,7 +26,7 @@ class TestDie(unittest.TestCase):
         self.assertEqual(dice_set.throw(), [2])
         self.assertEqual(dice_set.throw(), [3])
 
-    def test_single_die_multi_face(self):
+    def test_multi_die_multi_face(self):
         random.seed(0) # 1, 1, 0, 1, 2, 1, ...
         die1 = Die.Die([1, 2, 3])
         die2 = Die.Die([4, 5, 6])
