@@ -39,7 +39,7 @@ def _random_story(message=''):
 def _like(story_id):
     q = Like.query.filter_by(liker_id=current_user.id, story_id=story_id)
     story = Story.query.filter_by(id=story_id).first()
-    if q.first() == None:
+    if q.first() is None:
         new_like = Like()
         new_like.liker_id = current_user.id
         new_like.story_id = story_id
@@ -60,7 +60,7 @@ def _like(story_id):
 def _dislike(story_id):
     q = Dislike.query.filter_by(disliker_id=current_user.id, story_id=story_id)
     story = Story.query.filter_by(id=story_id).first()
-    if q.first() == None:
+    if q.first() is None:
         new_dislike = Dislike()
         new_dislike.disliker_id = current_user.id
         new_dislike.story_id = story_id
@@ -80,7 +80,7 @@ def _dislike(story_id):
 @login_required
 def _remove_like(story_id):
     l = Like.query.filter_by(liker_id=current_user.id, story_id=story_id).first()
-    if l == None:
+    if l is None:
         message = 'You have to like it first!'
     else:
         db.session.delete(l)
@@ -93,7 +93,7 @@ def _remove_like(story_id):
 @login_required
 def _remove_dislike(story_id):
     d = Dislike.query.filter_by(disliker_id=current_user.id, story_id=story_id).first()
-    if d == None:
+    if d is None:
         message = 'You didn\'t dislike it yet..'
     else:
         db.session.delete(d)
