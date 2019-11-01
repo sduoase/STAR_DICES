@@ -57,7 +57,7 @@ def _like(authorid, storyid):
         message = 'You\'ve already liked this story!'
     return _stories(message)
 
-
+# TODO to complete
 @stories.route('/stories/new_story', methods=['GET'])
 @login_required
 def new_stories():
@@ -66,7 +66,7 @@ def new_stories():
 
     return render_template("new_story.html", themes=themes)
 
-
+# TODO to complete
 @stories.route('/write_story', methods=['POST'])
 @login_required
 def write_story():
@@ -74,4 +74,4 @@ def write_story():
     face_set = dice_set.throw()
     print(request.form)
 
-    return render_template("/write_story.html", theme=request.form["theme"])
+    return render_template("/write_story.html", theme=request.form["theme"], outcome=face_set)

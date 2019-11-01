@@ -2,6 +2,7 @@
 import datetime as dt
 import enum
 import json
+import random
 
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.orm import relationship
@@ -58,9 +59,9 @@ class Story(db.Model):
     # define foreign key
     author = relationship('User', foreign_keys='Story.author_id')
     dice_set = relationship('Dice', foreign_keys='Story.dice_set_id')
-    
 
     # TODO complete this method invocation about throw die button
+
     def __init__(self, *args, **kw):
         super(Story, self).__init__(*args, **kw)
         self.date = dt.datetime.now()
@@ -120,8 +121,8 @@ def _deserialize_dice_set(json_dice_set):
 
 
 def retrieve_dice_set():
-    # TODO the .first() should became the selcted theme of users
-    dice = db.session.query(Dice).first()
+    # dice = db.session.query(Dice).first()
+    dice = db.session.query(Dice).all()
     if dice is None:
         return None
 

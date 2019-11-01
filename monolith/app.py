@@ -57,8 +57,10 @@ def create_app():
             die2 = Die.Die(['Jump', 'Sleep', 'Run'])
             die3 = Die.Die(['Summer', 'Winter', 'Spring', 'Fall'])
             die4 = Die.Die(['House', 'Mountain'])
-            dice_set = DiceSet.DiceSet([die1, die2, die3, die4], "testTheme")
+            dice_set = DiceSet.DiceSet([die1, die2, die3, die4], "theme1")
+            dice_set2 = DiceSet.DiceSet([die1, die2, die3, die4], "theme2")
             store_dice_set(dice_set)
+            store_dice_set(dice_set2)
 
     return app
 
