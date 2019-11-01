@@ -51,13 +51,14 @@ class Story(db.Model):
     date = db.Column(db.DateTime)
     # will store the number of likes, periodically updated in background
     likes = db.Column(db.Integer)
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    author = relationship('User', foreign_keys='Story.author_id')
-    # define foreign key
-    dice_set_id = db.Column(db.Integer, db.ForeignKey('dice.id'))
-    dice_set = relationship('Dice', foreign_keys='Story.dice_set_id')
     rolls_outcome = db.Column(db.Unicode(1000))
     theme = db.Column(db.Unicode(128))
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    dice_set_id = db.Column(db.Integer, db.ForeignKey('dice.id'))
+    # define foreign key
+    author = relationship('User', foreign_keys='Story.author_id')
+    dice_set = relationship('Dice', foreign_keys='Story.dice_set_id')
+    
 
     # TODO complete this method invocation about throw die button
     def __init__(self, *args, **kw):
