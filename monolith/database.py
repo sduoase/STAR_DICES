@@ -51,18 +51,21 @@ class Story(db.Model):
     date = db.Column(db.DateTime)
     # will store the number of likes, periodically updated in background
     likes = db.Column(db.Integer)
-    themes = db.Column(db.Unicode(128))
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    author = relationship('User', foreign_keys='Story.author_id')
     # define foreign key
     dice_set_id = db.Column(db.Integer, db.ForeignKey('dice.id'))
-    rolls_outcome = db.Column(
-        db.Integer, db.ForeignKey('dice.serialized_dice_set'))
-    author = relationship('User', foreign_keys='Story.author_id')
-    diceSet = relationship('Dice', foreign_keys='dice.id')
+    dice_set = relationship('Dice', foreign_keys='Story.dice_set_id')
+    rolls_outcome = db.Column(db.Unicode(1000))
+    theme = db.Column(db.Unicode(128))
 
+    # TODO complete this method invocation about throw die button
     def __init__(self, *args, **kw):
         super(Story, self).__init__(*args, **kw)
         self.date = dt.datetime.now()
+
+    def setText(self, text):
+        self.text = text
 
 
 class Like(db.Model):
@@ -90,7 +93,8 @@ class Follow(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     followee = relationship('User', foreign_keys='Follow.user_id')
 
-    followed_by_id= db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    followed_by_id = db.Column(
+        db.Integer, db.ForeignKey('user.id'), primary_key=True)
     follower = relationship('User', foreign_keys='Follow.user_id')
 
     def __init__(self, user, follower, *args, **kw):
@@ -99,7 +103,7 @@ class Follow(db.Model):
 
 
 class Dice(db.Model):
-    __tablename__ = 'dice_set'
+    __tablename__ = 'dice'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     serialized_dice_set = db.Column(db.Unicode(1000), nullable=False)
@@ -108,13 +112,14 @@ class Dice(db.Model):
 
 def _deserialize_dice_set(json_dice_set):
     dice_set = json.loads(json_dice_set)
-    test = DiceSet.DiceSet([Die.Die(dice) for dice in dice_set])
+    test = DiceSet.DiceSet([Die.Die(dice) for dice in dice_set], "test_theme")
     return test
 
 # At the moment we handle only 1 dice set. In the future more will be available.
 
 
 def retrieve_dice_set():
+    # TODO the .first() should became the selcted theme of users
     dice = db.session.query(Dice).first()
     if dice is None:
         return None

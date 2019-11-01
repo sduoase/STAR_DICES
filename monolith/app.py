@@ -9,6 +9,7 @@ from monolith.views import blueprints
 from monolith.auth import login_manager
 from monolith.classes import Die, DiceSet
 
+
 def create_app():
     app = Flask(__name__)
     app.config['WTF_CSRF_SECRET_KEY'] = 'A SECRET KEY'
@@ -56,7 +57,7 @@ def create_app():
             die2 = Die.Die(['Jump', 'Sleep', 'Run'])
             die3 = Die.Die(['Summer', 'Winter', 'Spring', 'Fall'])
             die4 = Die.Die(['House', 'Mountain'])
-            dice_set = DiceSet.DiceSet([die1, die2, die3, die4])
+            dice_set = DiceSet.DiceSet([die1, die2, die3, die4], "testTheme")
             store_dice_set(dice_set)
 
     return app

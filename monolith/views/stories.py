@@ -4,9 +4,11 @@ from monolith.auth import admin_required, current_user
 from flask_login import (current_user, login_user, logout_user,
                          login_required)
 from monolith.forms import UserForm
-from  sqlalchemy.sql.expression import func
+from monolith.classes import Die, DiceSet
+from sqlalchemy.sql.expression import func
 
 stories = Blueprint('stories', __name__)
+
 
 @stories.route('/')
 def _stories(message=''):
@@ -56,10 +58,20 @@ def _like(authorid, storyid):
     return _stories(message)
 
 
-@stories.route('/stories/new_story')
+@stories.route('/stories/new_story', methods=['GET'])
 @login_required
-def new_stories(authorid):
+def new_stories():
     dice_set = retrieve_dice_set()
-    message = dice_set.theme
-    # TODO complete
-    return render_template()
+    themes = [dice_set.theme]
+
+    return render_template("new_story.html", themes=themes)
+
+
+@stories.route('/write_story', methods=['POST'])
+@login_required
+def write_story():
+    dice_set = retrieve_dice_set()
+    face_set = dice_set.throw()
+    print(request.form)
+
+    return render_template("/write_story.html", theme=request.form["theme"])
