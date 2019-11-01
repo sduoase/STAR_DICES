@@ -7,7 +7,7 @@ class Die:
         self.faces = faces
 
     def throw(self):
-        face = random.randint(0, len(self.faces) - 1)
+        face = random.randint(0, len(self.faces)) - 1
         return self.faces[face]
 
     def serialize(self):
