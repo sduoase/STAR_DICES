@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template, request
+from flask import Blueprint, redirect, render_template, request, abort
 from monolith.database import db, Story, Like
 from monolith.auth import admin_required, current_user
 from flask_login import (current_user, login_user, logout_user,
@@ -24,6 +24,21 @@ def _story(story_id, message=''):
                            like_it_url="/stories/like/",
                            dislike_it_url="/stories/dislike/")
 
+@stories.route('/story/<story_id>/delete')
+@login_required
+def _delete_story(story_id):
+    story = Story.query.filter_by(id=story_id)
+    if story.first() is None:
+        abort(404)
+
+    if story.first().author_id != current_user.id:
+        message = 'You can delete only a story of yours'
+    else:
+        story.delete()
+        db.session.commit()
+        message = 'Story sucessfully deleted'
+    return render_template("message.html", message=message)
+
 @stories.route('/random_story')
 @login_required
 def _random_story(message=''):
@@ -39,7 +54,7 @@ def _random_story(message=''):
 @login_required
 def _like(authorid, storyid):
     q = Like.query.filter_by(liker_id=current_user.id, story_id=storyid)
-    if q.first() != None:
+    if q.first() is not None:
         new_like = Like()
         new_like.liker_id = current_user.id
         new_like.story_id = storyid

@@ -38,7 +38,7 @@ def follow(author_id):
     except IntegrityError:
         message = "Already following!"
     
-    return render_template('follow.html', message = message)
+    return render_template('message.html', message = message)
 
 @users.route('/wall/<author_id>/unfollow', methods=['GET'])
 @login_required
@@ -46,7 +46,7 @@ def unfollow(author_id):
     Follow.query.filter(Follow.user_id == author_id, Follow.followed_by_id == current_user.id).delete()
     db.session.commit()
 
-    return render_template('follow.html', message = "Unfollowed!")
+    return render_template('message.html', message = "Unfollowed!")
 
 @users.route('/my_wall/followers', methods=['GET'])
 @login_required

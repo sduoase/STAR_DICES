@@ -4,7 +4,7 @@ Hi {{ current_user.firstname }}! <a href="/logout">Logout</a>
 {% for story in stories%}
     <div>
       <li>
-        {{story.text}} -- Likes:{{story.likes}}
+        {{story.text}} -- Likes: {{story.likes}} -- <a href="story/{{story.id}}/delete">Delete</a>
       </li>
     </div>
 {% endfor %}
