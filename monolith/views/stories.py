@@ -12,9 +12,6 @@ def _stories(message=''):
     if current_user.is_anonymous:
         return redirect("/login", code=302)
     allstories = db.session.query(Story)
-    for story in allstories:
-        if len(story.text) > 50:
-            story.text=story.text[:50]+ '..'
     return render_template("stories.html", message=message, stories=allstories,
                             url="/story/")
 
