@@ -5,8 +5,10 @@
     <ul>
     {% for story in stories: %}
         <li>
-        "{{story.text}}"    Likes: {{story.likes}} Dislikes: {{story.dislikes}} ({{story.date}})
-        <a href="{{url}}{{story.id}}">Read the whole story!</a>
+            <h3 style="display: inline;">{{story.title}}</h3>
+            <p style="display: inline;">by <a href="/wall/{{story.author_id}}">{{story.author.firstname}} {{story.author.lastname}}</a></p>
+            <p><i>"{{story.text}}" <a href="{{url}}{{story.id}}">Read the whole story</a></i></p>
+            <p>Likes: {{story.likes}} Dislikes: {{story.dislikes}} ({{story.date}})</p>
         </li>
     {% endfor %}
     </ul>

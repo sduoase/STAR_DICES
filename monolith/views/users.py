@@ -30,6 +30,7 @@ def wall(author_id):
 @users.route('/wall/<author_id>/follow', methods=['GET'])
 @login_required
 def follow(author_id):
+    #TODO: cannot follow myself 
     db.session.add(Follow(author_id, current_user.id))
     message = ''
     try:
@@ -43,6 +44,7 @@ def follow(author_id):
 @users.route('/wall/<author_id>/unfollow', methods=['GET'])
 @login_required
 def unfollow(author_id):
+    #TODO: cannot unfollow myself 
     msg = ""
     if isFollowing(author_id, current_user.id) :
         Follow.query.filter(Follow.user_id == author_id, Follow.followed_by_id == current_user.id).delete()
