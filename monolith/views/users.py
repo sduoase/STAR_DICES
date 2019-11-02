@@ -1,7 +1,7 @@
 from flask import Blueprint, redirect, render_template, request, url_for, abort
 from flask_login import (current_user, login_user, logout_user,
                          login_required)
-from monolith.database import db, User, Story, Follow
+from monolith.database import db, User, Story, Follow, isFollowing
 from monolith.auth import admin_required, current_user
 from sqlalchemy.exc import IntegrityError
 
@@ -25,7 +25,7 @@ def wall(author_id):
     if author is None:
         abort(404)
     stories = Story.query.filter_by(author_id = author_id)
-    return render_template("wall.html", stories=stories, author=author)
+    return render_template("wall.html", stories=stories, author=author, alreadyFollowing = isFollowing(author_id, current_user.id))
 
 @users.route('/wall/<author_id>/follow', methods=['GET'])
 @login_required
@@ -43,10 +43,14 @@ def follow(author_id):
 @users.route('/wall/<author_id>/unfollow', methods=['GET'])
 @login_required
 def unfollow(author_id):
-    Follow.query.filter(Follow.user_id == author_id, Follow.followed_by_id == current_user.id).delete()
-    db.session.commit()
-
-    return render_template('follow.html', message = "Unfollowed!")
+    msg = ""
+    if isFollowing(author_id, current_user.id) :
+        Follow.query.filter(Follow.user_id == author_id, Follow.followed_by_id == current_user.id).delete()
+        db.session.commit()
+        msg = "Unfollowed!"
+    else:
+        msg = "You were not following that particularly user!"
+    return render_template('follow.html', message = msg)
 
 @users.route('/my_wall/followers', methods=['GET'])
 @login_required

@@ -111,3 +111,6 @@ def store_dice_set(dice_set):
     db_entry.serialized_dice_set = json.dumps(dice_set.serialize())
     db.session.add(db_entry)
     db.session.commit()
+
+def isFollowing(who, by_who):
+    return db.session.query(Follow).filter(Follow.followed_by_id == by_who).filter(Follow.user_id == who).count() > 0
