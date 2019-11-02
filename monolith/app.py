@@ -44,6 +44,7 @@ def create_app():
             example = Story()
             example.text = 'Trial story of example admin user :)'
             example.likes = 42
+            example.dislikes = 5
             example.author_id = 1
             print(example)
             db.session.add(example)
