@@ -32,7 +32,7 @@ def _delete_story(story_id):
         abort(404)
 
     if story.first().author_id != current_user.id:
-        message = 'You can delete only a story of yours'
+        abort(401)
     else:
         story.delete()
         db.session.commit()
