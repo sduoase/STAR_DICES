@@ -30,29 +30,32 @@ def wall(author_id):
 @users.route('/wall/<author_id>/follow', methods=['GET'])
 @login_required
 def follow(author_id):
-    #TODO: cannot follow myself 
-    db.session.add(Follow(author_id, current_user.id))
     message = ''
-    try:
-        db.session.commit()
-        message = "Following!"
-    except IntegrityError:
-        message = "Already following!"
-    
+    if int(author_id)==current_user.id:
+        message= "Cannot follow yourself"
+    else:
+        db.session.add(Follow(author_id, current_user.id))
+        try:
+            db.session.commit()
+            message = "Following!"
+        except IntegrityError:
+            message = "Already following!"
     return render_template('follow.html', message = message)
 
 @users.route('/wall/<author_id>/unfollow', methods=['GET'])
 @login_required
 def unfollow(author_id):
-    #TODO: cannot unfollow myself 
-    msg = ""
-    if isFollowing(author_id, current_user.id) :
-        Follow.query.filter(Follow.user_id == author_id, Follow.followed_by_id == current_user.id).delete()
-        db.session.commit()
-        msg = "Unfollowed!"
+    message = ''
+    if int(author_id)==current_user.id:
+        message= "Cannot unfollow yourself"
     else:
-        msg = "You were not following that particularly user!"
-    return render_template('follow.html', message = msg)
+        if isFollowing(author_id, current_user.id) :
+            Follow.query.filter(Follow.user_id == author_id, Follow.followed_by_id == current_user.id).delete()
+            db.session.commit()
+            message = "Unfollowed!"
+        else:
+            message = "You were not following that particularly user!"
+    return render_template('follow.html', message = message)
 
 @users.route('/my_wall/followers', methods=['GET'])
 @login_required
