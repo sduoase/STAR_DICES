@@ -1,10 +1,5 @@
-<<<<<<< HEAD
 from flask import Blueprint, redirect, render_template, request, abort
-from monolith.database import db, Story, Like
-=======
-from flask import Blueprint, redirect, render_template, request
 from monolith.database import db, Story, Like, Dislike
->>>>>>> 47bd492fcb7e4b4d266ce67e0109a8f0f4c1fd70
 from monolith.auth import admin_required, current_user
 from flask_login import (current_user, login_user, logout_user,
                          login_required)
