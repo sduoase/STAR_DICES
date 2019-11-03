@@ -15,7 +15,7 @@ def _stories(message=''):
     return render_template("stories.html", message=message, stories=allstories,
                             url="/story/")
 
-@stories.route('/story/<story_id>')
+@stories.route('/story/<int:story_id>')
 @login_required
 def _story(story_id, message=''):
     story = Story.query.filter_by(id=story_id).first()
@@ -34,7 +34,7 @@ def _random_story(message=''):
     return render_template("story.html", message=message, story=story,
                            url="/story/")
 
-@stories.route('/story/<story_id>/like')
+@stories.route('/story/<int:story_id>/like')
 @login_required
 def _like(story_id):
     q = Like.query.filter_by(liker_id=current_user.id, story_id=story_id)
@@ -55,7 +55,7 @@ def _like(story_id):
         message = 'You\'ve already liked this story!'
     return _story(story_id, message)
 
-@stories.route('/story/<story_id>/dislike')
+@stories.route('/story/<int:story_id>/dislike')
 @login_required
 def _dislike(story_id):
     q = Dislike.query.filter_by(disliker_id=current_user.id, story_id=story_id)
@@ -76,7 +76,7 @@ def _dislike(story_id):
         message = 'You\'ve already disliked this story!'
     return _story(story_id, message)
 
-@stories.route('/story/<story_id>/remove_like')
+@stories.route('/story/<int:story_id>/remove_like')
 @login_required
 def _remove_like(story_id):
     l = Like.query.filter_by(liker_id=current_user.id, story_id=story_id).first()
@@ -89,7 +89,7 @@ def _remove_like(story_id):
     return _story(story_id, message)
     
     
-@stories.route('/story/<story_id>/remove_dislike')
+@stories.route('/story/<int:story_id>/remove_dislike')
 @login_required
 def _remove_dislike(story_id):
     d = Dislike.query.filter_by(disliker_id=current_user.id, story_id=story_id).first()

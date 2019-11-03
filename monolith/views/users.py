@@ -18,7 +18,7 @@ def my_wall():
     stories = db.session.query(Story).filter(Story.author_id == current_user.id)
     return render_template("mywall.html", stories=stories)
 
-@users.route('/wall/<author_id>', methods=['GET'])
+@users.route('/wall/<int:author_id>', methods=['GET'])
 @login_required
 def wall(author_id):
     author = User.query.filter_by(id = author_id).first()
@@ -27,11 +27,11 @@ def wall(author_id):
     stories = Story.query.filter_by(author_id = author_id)
     return render_template("wall.html", stories=stories, author=author, alreadyFollowing = isFollowing(author_id, current_user.id))
 
-@users.route('/wall/<author_id>/follow', methods=['GET'])
+@users.route('/wall/<int:author_id>/follow', methods=['GET'])
 @login_required
 def follow(author_id):
     message = ''
-    if int(author_id)==current_user.id:
+    if author_id==current_user.id:
         message= "Cannot follow yourself"
     else:
         db.session.add(Follow(author_id, current_user.id))
@@ -42,11 +42,11 @@ def follow(author_id):
             message = "Already following!"
     return render_template('follow.html', message = message)
 
-@users.route('/wall/<author_id>/unfollow', methods=['GET'])
+@users.route('/wall/<int:author_id>/unfollow', methods=['GET'])
 @login_required
 def unfollow(author_id):
     message = ''
-    if int(author_id)==current_user.id:
+    if author_id==current_user.id:
         message= "Cannot unfollow yourself"
     else:
         if isFollowing(author_id, current_user.id) :
