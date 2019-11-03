@@ -1,7 +1,0 @@
-/
-/create_user
-/login
-/logout
-/stories
-/stories/like/<authorid>/<storyid>
-/users
