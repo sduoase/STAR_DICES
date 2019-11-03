@@ -1,7 +1,10 @@
 <h1>Storytellers</h1>
 <p>Welcome to {{author.firstname}} {{author.lastname}} page!</p>
-<a href="/wall/{{author.id}}/follow">Follow</a>
+{% if alreadyFollowing %}
 <a href="/wall/{{author.id}}/unfollow">Unfollow</a>
+{%else%}
+<a href="/wall/{{author.id}}/follow">Follow</a>
+{%endif%}
 <h2>Stories</h2>
 {% for story in stories%}
     <div><li>{{story.text}} -- <a href="/story/{{story.id}}">Read</a></li></div>
