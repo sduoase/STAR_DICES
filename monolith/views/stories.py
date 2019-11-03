@@ -24,6 +24,21 @@ def _story(story_id, message=''):
     return render_template("story.html", message=message, story=story,
                            url="/story/")
 
+@stories.route('/story/<story_id>/delete')
+@login_required
+def _delete_story(story_id):
+    story = Story.query.filter_by(id=story_id)
+    if story.first() is None:
+        abort(404)
+
+    if story.first().author_id != current_user.id:
+        abort(401)
+    else:
+        story.delete()
+        db.session.commit()
+        message = 'Story sucessfully deleted'
+    return render_template("message.html", message=message)
+
 @stories.route('/random_story')
 @login_required
 def _random_story(message=''):
