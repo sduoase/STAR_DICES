@@ -52,13 +52,15 @@ def _random_story(message=''):
 @stories.route('/story/<story_id>/like')
 @login_required
 def _like(story_id):
-    q = Like.query.filter_by(liker_id=current_user.id, story_id=story_id)
     story = Story.query.filter_by(id=story_id).first()
+    if story is None:
+        abort(404)
+    
+    q = Like.query.filter_by(liker_id=current_user.id, story_id=story_id)
     if q.first() is None:
         new_like = Like()
         new_like.liker_id = current_user.id
         new_like.story_id = story_id
-        new_like.liked_id = story.author_id
         # remove dislike, if present
         d = Dislike.query.filter_by(disliker_id=current_user.id, story_id=story_id).first()
         if d is not None: 
@@ -73,13 +75,15 @@ def _like(story_id):
 @stories.route('/story/<story_id>/dislike')
 @login_required
 def _dislike(story_id):
-    q = Dislike.query.filter_by(disliker_id=current_user.id, story_id=story_id)
     story = Story.query.filter_by(id=story_id).first()
+    if story is None:
+        abort(404)
+
+    q = Dislike.query.filter_by(disliker_id=current_user.id, story_id=story_id)
     if q.first() is None:
         new_dislike = Dislike()
         new_dislike.disliker_id = current_user.id
         new_dislike.story_id = story_id
-        new_dislike.disliked_id = story.author_id
         # remove like, if present
         l = Like.query.filter_by(liker_id=current_user.id, story_id=story_id).first()
         if l is not None:

@@ -24,35 +24,46 @@ def wall(author_id):
     author = User.query.filter_by(id = author_id).first()
     if author is None:
         abort(404)
+
     stories = Story.query.filter_by(author_id = author_id)
     return render_template("wall.html", stories=stories, author=author, alreadyFollowing = isFollowing(author_id, current_user.id))
 
 @users.route('/wall/<author_id>/follow', methods=['GET'])
 @login_required
 def follow(author_id):
+    author = User.query.filter_by(id = author_id).first()
+    if author is None:
+        abort(404)
+
     db.session.add(Follow(author_id, current_user.id))
-    message = ''
     try:
         db.session.commit()
         message = "Following!"
     except IntegrityError:
         message = "Already following!"
-    
-    return render_template('message.html', message = message)
+
+    return render_template('message.html', message=message)
 
 @users.route('/wall/<author_id>/unfollow', methods=['GET'])
 @login_required
 def unfollow(author_id):
-    msg = ""
-    if isFollowing(author_id, current_user.id) :
+    author = User.query.filter_by(id = author_id).first()
+    if author is None:
+        abort(404)
+
+    if isFollowing(author_id, current_user.id):
         Follow.query.filter(Follow.user_id == author_id, Follow.followed_by_id == current_user.id).delete()
         db.session.commit()
-        msg = "Unfollowed!"
+        message = "Unfollowed!"
     else:
-        msg = "You were not following that particularly user!"
-    return render_template('message.html', message = msg)
+        message = "You were not following that particularly user!"
+    return render_template('message.html', message=message)
 
 @users.route('/my_wall/followers', methods=['GET'])
 @login_required
 def my_followers():
-    return render_template('myfollowers.html', followers = db.session.query(User).join(Follow, User.id == Follow.followed_by_id).filter(Follow.user_id == current_user.id).filter(Follow.followed_by_id != current_user.id).all())
+    return render_template('myfollowers.html',
+                           followers = db.session.query(User).join(Follow, User.id == Follow.followed_by_id)
+                                                             .filter(Follow.user_id == current_user.id)
+                                                             .filter(Follow.followed_by_id != current_user.id)
+                                                             .all())
