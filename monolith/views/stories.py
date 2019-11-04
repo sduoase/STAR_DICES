@@ -86,7 +86,7 @@ def new_stories():
         dice_themes = retrieve_dice_bytheme()
         return render_template("new_story.html", themes=dice_themes)
     else:
-        return 0
+        
 
 # TODO to complete
 @stories.route('/write_story/<story_id>', methods=['POST', 'GET'])

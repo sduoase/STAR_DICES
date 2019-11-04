@@ -63,7 +63,7 @@ class Story(db.Model):
 
     # TODO complete this method invocation about throw die button
 
-    def __init__(self, *args, **kw):
+    def __init__(self, theme, rolls_outcome, *args, **kw):
         super(Story, self).__init__(*args, **kw)
         self.date = dt.datetime.now()
 
