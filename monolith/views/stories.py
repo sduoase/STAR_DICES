@@ -1,3 +1,5 @@
+import re
+
 from flask import Blueprint, redirect, render_template, request, abort
 from monolith.database import db, Story, Like, Dislike
 from monolith.auth import admin_required, current_user
@@ -119,6 +121,12 @@ def _remove_dislike(story_id):
         db.session.commit()
         message = 'You removed your dislike!'
     return _story(story_id, message)
-    
-    
-    
+
+# Function to be called during story publishing.
+# If it return False, stop publishing and return an error message.
+def is_story_valid(story_text, dice_roll):
+    split_story_text = re.findall(r"[\w']+|[.,!?;]", story_text.lower())
+    for word in dice_roll:
+        if word.lower() not in split_story_text:
+            return False
+    return True
