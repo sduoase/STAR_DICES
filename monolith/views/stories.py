@@ -119,6 +119,11 @@ def _remove_dislike(story_id):
         db.session.commit()
         message = 'You removed your dislike!'
     return _story(story_id, message)
-    
-    
-    
+
+# Function to be called during story publishing.
+# If it return False, stop publishing and return an error message.
+def is_story_valid(story_text, dice_roll):
+    for word in dice_roll:
+        if story_text.find(word) == -1:
+            return False
+    return True
