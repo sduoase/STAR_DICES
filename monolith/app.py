@@ -43,14 +43,14 @@ def create_app():
         if story is None:
             example = Story()
             example.title= 'Test title'
-            example.text = 'Trial story of example admin user :) but i want to add more words just to test that those will be cutted out in the home'
+            example.text = 'Trial story of example admin user :) but i want to add more words just to test that those will be cut out in the home'
             example.likes = 42
             example.dislikes = 5
             example.author_id = 1
             db.session.add(example)
             example = Story()
             example.title= 'Test title 2'
-            example.text = 'Trial story 2 of example admin user :) but i want to add more words just to test that those will be cutted out in the home'
+            example.text = 'Trial story 2 of example admin user :) but i want to add more words just to test that those will be cut out in the home'
             example.likes = 42
             example.dislikes = 5
             example.author_id = 1

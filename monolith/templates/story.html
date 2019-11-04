@@ -12,6 +12,9 @@
         <p>Likes: {{story.likes}} <a href="{{url}}{{story.id}}/like">Like it!</a> <a href="{{url}}{{story.id}}/remove_like">Remove your like</a></p>
         <p>Dislikes: {{story.dislikes}} <a href="{{url}}{{story.id}}/dislike">Dislike it!</a> <a href="{{url}}{{story.id}}/remove_dislike">Remove your dislike</a></p>
         <p>Published on {{story.date}}</p>
+        {% if story.author_id == current_user.id %}
+        <a href="{{story.id}}/delete">Delete</a>
+        {%endif%}
     {% endif %}
   </body>
 </html>

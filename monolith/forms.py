@@ -29,7 +29,7 @@ class StoryForm(FlaskForm):
     title = f.TextField('text', validators=[DataRequired(),
                                            Length(-1,
                                                   MAX_CHAR_STORY_TITLE,
-                                                  message="Reach max number of characters for the tile!")
+                                                  message="Reach max number of characters for the title!")
                                            ])
     text = f.TextField('text', validators=[DataRequired(),
                                            Length(-1,

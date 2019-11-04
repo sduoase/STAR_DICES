@@ -26,7 +26,8 @@ def wall(author_id):
         abort(404)
 
     stories = Story.query.filter_by(author_id = author_id)
-    return render_template("wall.html", stories=stories, author=author, alreadyFollowing = isFollowing(author_id, current_user.id))
+    return render_template("wall.html", stories=stories, author=author, 
+                            current_user=current_user, alreadyFollowing = isFollowing(author_id, current_user.id))
 
 @users.route('/wall/<int:author_id>/follow', methods=['GET'])
 @login_required
@@ -45,7 +46,7 @@ def follow(author_id):
             message = "Following!"
         except IntegrityError:
             message = "Already following!"
-    return render_template('follow.html', message = message)
+    return render_template('message.html', message = message)
 
 @users.route('/wall/<int:author_id>/unfollow', methods=['GET'])
 @login_required
@@ -63,7 +64,7 @@ def unfollow(author_id):
             message = "Unfollowed!"
         else:
             message = "You were not following that particular user!"
-    return render_template('follow.html', message = message)
+    return render_template('message.html', message = message)
 
 @users.route('/my_wall/followers', methods=['GET'])
 @login_required

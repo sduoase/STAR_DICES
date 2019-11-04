@@ -22,7 +22,7 @@ def _story(story_id, message=''):
     if story is None:
         message = 'Story not found'
     return render_template("story.html", message=message, story=story,
-                           url="/story/")
+                           url="/story/", current_user=current_user)
 
 @stories.route('/story/<story_id>/delete')
 @login_required
@@ -47,7 +47,7 @@ def _random_story(message=''):
         # Should not happen.
         message = 'Something went wrong'
     return render_template("story.html", message=message, story=story,
-                           url="/story/")
+                           url="/story/", current_user=current_user)
 
 @stories.route('/story/<int:story_id>/like')
 @login_required
