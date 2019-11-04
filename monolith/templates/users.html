@@ -1,12 +1,13 @@
-<html>
-  <body>
-    <h1>User List</h1>
-    <ul>
-      {% for user in users: %}
-      <li>
-      {{user.firstname}} {{user.lastname}}
-      </li>
-      {% endfor %}
-    </ul>
-  </body>
-</html>
+{% extends "navigation.html" %}
+{% block content %}
+<body>
+  <h1>User List</h1>
+  <ul>
+    {% for user in users: %}
+    <li>
+    {{user.firstname}} {{user.lastname}}
+    </li>
+    {% endfor %}
+  </ul>
+</body>
+{%endblock%}
