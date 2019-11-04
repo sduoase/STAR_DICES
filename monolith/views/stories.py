@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template, request
+from flask import Blueprint, redirect, render_template, request, abort
 from monolith.database import db, Story, Like, Dislike
 from monolith.auth import admin_required, current_user
 from flask_login import (current_user, login_user, logout_user,
@@ -39,9 +39,12 @@ def _random_story(message=''):
 @stories.route('/story/<story_id>/like')
 @login_required
 def _like(story_id):
-    q = Like.query.filter_by(liker_id=current_user.id, story_id=story_id)
     story = Story.query.filter_by(id=story_id).first()
-    if q.first() == None:
+    if story is None:
+        abort(404)
+    
+    q = Like.query.filter_by(liker_id=current_user.id, story_id=story_id)
+    if q.first() is None:
         new_like = Like()
         new_like.liker_id = current_user.id
         new_like.story_id = story_id
@@ -52,21 +55,22 @@ def _like(story_id):
             db.session.delete(d)
             async_remove_dislike.delay(story_id)
         async_like.delay(story_id)
-        print(new_like)
         db.session.add(new_like)
         db.session.commit()
         message = 'Like added!'
     else:
-        print('I?VE ALREADY LIKED THIS!')
         message = 'You\'ve already liked this story!'
     return _story(story_id, message)
 
 @stories.route('/story/<story_id>/dislike')
 @login_required
 def _dislike(story_id):
-    q = Dislike.query.filter_by(disliker_id=current_user.id, story_id=story_id)
     story = Story.query.filter_by(id=story_id).first()
-    if q.first() == None:
+    if story is None:
+        abort(404)
+    
+    q = Dislike.query.filter_by(disliker_id=current_user.id, story_id=story_id)
+    if q.first() is None:
         new_dislike = Dislike()
         new_dislike.disliker_id = current_user.id
         new_dislike.story_id = story_id
@@ -87,8 +91,12 @@ def _dislike(story_id):
 @stories.route('/story/<story_id>/remove_like')
 @login_required
 def _remove_like(story_id):
+    story = Story.query.filter_by(id=story_id).first()
+    if story is None:
+        abort(404)
+    
     l = Like.query.filter_by(liker_id=current_user.id, story_id=story_id).first()
-    if l == None:
+    if l is None:
         message = 'You have to like it first!'
     else:
         async_remove_like.delay(story_id)
@@ -101,8 +109,12 @@ def _remove_like(story_id):
 @stories.route('/story/<story_id>/remove_dislike')
 @login_required
 def _remove_dislike(story_id):
+    story = Story.query.filter_by(id=story_id).first()
+    if story is None:
+        abort(404)
+    
     d = Dislike.query.filter_by(disliker_id=current_user.id, story_id=story_id).first()
-    if d == None:
+    if d is None:
         message = 'You didn\'t dislike it yet..'
     else:
         async_remove_dislike.delay(story_id)
