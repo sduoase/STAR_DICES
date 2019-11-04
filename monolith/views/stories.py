@@ -15,14 +15,14 @@ def _stories(message=''):
     return render_template("stories.html", message=message, stories=allstories,
                             url="/story/")
 
-@stories.route('/story/<story_id>')
+@stories.route('/story/<int:story_id>')
 @login_required
 def _story(story_id, message=''):
     story = Story.query.filter_by(id=story_id).first()
     if story is None:
         message = 'Story not found'
     return render_template("story.html", message=message, story=story,
-                           url="/story/")
+                           url="/story/", current_user=current_user)
 
 @stories.route('/story/<story_id>/delete')
 @login_required
@@ -47,9 +47,9 @@ def _random_story(message=''):
         # Should not happen.
         message = 'Something went wrong'
     return render_template("story.html", message=message, story=story,
-                           url="/story/")
+                           url="/story/", current_user=current_user)
 
-@stories.route('/story/<story_id>/like')
+@stories.route('/story/<int:story_id>/like')
 @login_required
 def _like(story_id):
     story = Story.query.filter_by(id=story_id).first()
@@ -72,7 +72,7 @@ def _like(story_id):
         message = 'You\'ve already liked this story!'
     return _story(story_id, message)
 
-@stories.route('/story/<story_id>/dislike')
+@stories.route('/story/<int:story_id>/dislike')
 @login_required
 def _dislike(story_id):
     story = Story.query.filter_by(id=story_id).first()
@@ -95,7 +95,7 @@ def _dislike(story_id):
         message = 'You\'ve already disliked this story!'
     return _story(story_id, message)
 
-@stories.route('/story/<story_id>/remove_like')
+@stories.route('/story/<int:story_id>/remove_like')
 @login_required
 def _remove_like(story_id):
     l = Like.query.filter_by(liker_id=current_user.id, story_id=story_id).first()
@@ -108,7 +108,7 @@ def _remove_like(story_id):
     return _story(story_id, message)
     
     
-@stories.route('/story/<story_id>/remove_dislike')
+@stories.route('/story/<int:story_id>/remove_dislike')
 @login_required
 def _remove_dislike(story_id):
     d = Dislike.query.filter_by(disliker_id=current_user.id, story_id=story_id).first()

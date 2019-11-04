@@ -47,6 +47,7 @@ class User(db.Model):
 class Story(db.Model):
     __tablename__ = 'story'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    title= db.Column(db.Text(50))
     text = db.Column(db.Text(1000)) # around 200 (English) words 
     date = db.Column(db.DateTime)
     likes = db.Column(db.Integer) # will store the number of likes, periodically updated in background
