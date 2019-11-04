@@ -134,8 +134,10 @@ def getStats(user_id):
         tot_stories+=1
         tot_likes+=story.likes
         tot_dislikes+=story.dislikes
+    if tot_stories==0:
+        return 0
     if tot_likes==0:
         tot_likes=1
     if tot_dislikes==0:
-        tot_dislikes==1
+        tot_dislikes=1
     return (tot_likes/tot_dislikes)/tot_stories
