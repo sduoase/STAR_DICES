@@ -38,7 +38,7 @@ def create_app():
             db.session.add(example)
             db.session.commit()
 
-        q = db.session.query(Story).filter(Story.id == 1)
+        q = db.session.query(Story)
         story = q.first()
         if story is None:
             example = Story()
