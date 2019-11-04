@@ -31,13 +31,16 @@
     <h1 style="text-align: center;">Create your own story</h1>
     <h3><span style="color: #0000ff;">Choosen theme: <span style="color: #000000;">{{ theme }}</span></span></h3>
     <h3><span style="color: #0000ff;">Face set:</span><span style="color: #000000;">{{outcome}}</span></h3>
+    <form action="" method="POST">
     <p>
-        <h3><span style="color: #0000ff;">Compose your story here</span></h3>
+        <h3><span style="color: #0000ff;">Title:</span><input type="text" name="title" value="{{title}}"></h3>
     </p>
-    <textarea rows="30" cols="120"></textarea>
-    <br><br>
-    <input class="d_button" type="submit" name="store_story" value="Store Changes">
-    <input class="c_button" type="submit" name="publish" value="Publish">
+    
+        <textarea rows="30" cols="120" name="text">{{text}}</textarea>
+        <br><br>
+        <button class="d_button" type="submit" name="store_story" value="0">Store</button>
+        <button class="c_button" type="submit" name="store_story" value="1">Publish</button>
+    </form>
 </body>
 
 </html>

@@ -48,22 +48,20 @@ class User(db.Model):
 class Story(db.Model):
     __tablename__ = 'story'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    text = db.Column(db.Text(1000))  # around 200 (English) words
+    text = db.Column(db.Text(1000), nullable=True)  # around 200 (English) words
     date = db.Column(db.DateTime)
     # will store the number of likes, periodically updated in background
-    likes = db.Column(db.Integer)
+    likes = db.Column(db.Integer, default=0)
     rolls_outcome = db.Column(db.Unicode(1000))
     theme = db.Column(db.Unicode(128))
+    title = db.Column(db.Text(50), nullable=True)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    dice_set_id = db.Column(db.Integer, db.ForeignKey('dice.id'))
     published = db.Column(db.Boolean, default=False)
     # define foreign key
     author = relationship('User', foreign_keys='Story.author_id')
-    dice_set = relationship('Dice', foreign_keys='Story.dice_set_id')
 
     # TODO complete this method invocation about throw die button
-
-    def __init__(self, theme, rolls_outcome, *args, **kw):
+    def __init__(self, *args, **kw):
         super(Story, self).__init__(*args, **kw)
         self.date = dt.datetime.now()
 
@@ -121,8 +119,11 @@ def _deserialize_dice_set(json_dice_set):
 # At the moment we handle only 1 dice set. In the future more will be available.
 
 
-def retrieve_dice_set():
-    dice = db.session.query(Dice).first()
+def retrieve_dice_set(theme=None):
+    if theme == None:
+        dice = db.session.query(Dice).first()
+    else:
+        dice = db.session.query(Dice).filter(Dice.theme==theme).first()
     if dice is None:
         return None
 
@@ -139,8 +140,10 @@ def store_dice_set(dice_set):
     db.session.add(db_entry)
     db.session.commit()
 
+
 def isFollowing(who, by_who):
     return db.session.query(Follow).filter(Follow.followed_by_id == by_who).filter(Follow.user_id == who).count() > 0
+
 
 def retrieve_dice_bytheme():
     themes = []
