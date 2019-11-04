@@ -52,10 +52,12 @@ def _like(story_id):
             db.session.delete(d)
             async_remove_dislike.delay(story_id)
         async_like.delay(story_id)
+        print(new_like)
         db.session.add(new_like)
         db.session.commit()
         message = 'Like added!'
     else:
+        print('I?VE ALREADY LIKED THIS!')
         message = 'You\'ve already liked this story!'
     return _story(story_id, message)
 
