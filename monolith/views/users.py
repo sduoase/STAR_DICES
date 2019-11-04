@@ -24,6 +24,7 @@ def wall(author_id):
     author = User.query.filter_by(id = author_id).first()
     if author is None:
         abort(404)
+
     stories = Story.query.filter_by(author_id = author_id)
     return render_template("wall.html", stories=stories, author=author, alreadyFollowing = isFollowing(author_id, current_user.id))
 
@@ -34,6 +35,10 @@ def follow(author_id):
     if author_id==current_user.id:
         message= "Cannot follow yourself"
     else:
+        author = User.query.filter_by(id = author_id).first()
+        if author is None:
+            abort(404)
+            
         db.session.add(Follow(author_id, current_user.id))
         try:
             db.session.commit()
@@ -49,15 +54,22 @@ def unfollow(author_id):
     if author_id==current_user.id:
         message= "Cannot unfollow yourself"
     else:
+        author = User.query.filter_by(id = author_id).first()
+        if author is None:
+            abort(404)
         if isFollowing(author_id, current_user.id) :
             Follow.query.filter(Follow.user_id == author_id, Follow.followed_by_id == current_user.id).delete()
             db.session.commit()
             message = "Unfollowed!"
         else:
-            message = "You were not following that particularly user!"
+            message = "You were not following that particular user!"
     return render_template('follow.html', message = message)
 
 @users.route('/my_wall/followers', methods=['GET'])
 @login_required
 def my_followers():
-    return render_template('myfollowers.html', followers = db.session.query(User).join(Follow, User.id == Follow.followed_by_id).filter(Follow.user_id == current_user.id).filter(Follow.followed_by_id != current_user.id).all())
+    return render_template('myfollowers.html',
+                           followers = db.session.query(User).join(Follow, User.id == Follow.followed_by_id)
+                                                             .filter(Follow.user_id == current_user.id)
+                                                             .filter(Follow.followed_by_id != current_user.id)
+                                                             .all())
