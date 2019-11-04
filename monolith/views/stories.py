@@ -4,13 +4,13 @@ from monolith.auth import admin_required, current_user
 from flask_login import (current_user, login_user, logout_user,
                          login_required)
 from sqlalchemy.sql.expression import func
-from monolith.background import async_like, async_dislike, async_remove_like, async_remove_dislike, init_db_context
+from monolith.background import async_like, async_dislike, async_remove_like, async_remove_dislike
 
 stories = Blueprint('stories', __name__)
 
 @stories.route('/')
 def _stories(message=''):
-    init_db_context.delay()
+    #init_db_context.delay()
     if current_user.is_anonymous:
         return redirect("/login", code=302)
     allstories = db.session.query(Story)

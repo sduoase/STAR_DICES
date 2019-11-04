@@ -5,16 +5,20 @@ import os
 from flask import Flask, jsonify
 
 from monolith.database import db, User, Story, Dice, retrieve_dice_set, store_dice_set
-from monolith.views import blueprints
 from monolith.auth import login_manager
 from monolith.classes import Die, DiceSet
+from monolith import celeryApp
 
 def create_app():
     app = Flask(__name__)
     app.config['WTF_CSRF_SECRET_KEY'] = 'A SECRET KEY'
     app.config['SECRET_KEY'] = 'ANOTHER ONE'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///storytellers.db'
-
+    
+    celery = celeryApp.make_celery(app)
+    celeryApp.celery = celery
+    
+    from monolith.views import blueprints
     for bp in blueprints:
         app.register_blueprint(bp)
         bp.app = app
@@ -22,6 +26,7 @@ def create_app():
     db.init_app(app)
     login_manager.init_app(app)
     db.create_all(app=app)
+    
 
     with app.app_context():
         # Create first admin user.
@@ -61,7 +66,6 @@ def create_app():
             store_dice_set(dice_set)
 
     return app
-
 
 if __name__ == '__main__':
     app = create_app()
