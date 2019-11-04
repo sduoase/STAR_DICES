@@ -15,13 +15,12 @@ class TestLike(unittest.TestCase):
         with self.context:
             db.drop_all()
     
-    def test_single_like_dislike(self):
+    def test_single_like_remove_like(self):
         reply = self.app.post('/login', data={'email': 'example@example.com', 'password': 'admin'})
         self.assertEqual(reply.status_code, 302)
         reply = self.app.get('/story/1/like')
         self.assertEqual(reply.status_code, 200)
         with self.context:
-            print(Like.query.all())
             l = Like.query.filter_by(liker_id=1, story_id=1).first()
             self.assertIsNotNone(l)
         reply = self.app.get('/story/1/remove_like')
@@ -29,16 +28,39 @@ class TestLike(unittest.TestCase):
             l = Like.query.filter_by(liker_id=1, story_id=1).first()
             self.assertIsNone(l)
     
-    def test_single_like_dislike(self):
+    def test_not_existing_story(self):
+        reply = self.app.post('/login', data={'email': 'example@example.com', 'password': 'admin'})
+        self.assertEqual(reply.status_code, 302)
+        reply = self.app.get('/story/5/like')
+        self.assertEqual(reply.status_code, 500)
+        
+    def test_single_dislike_remove_dislike(self):
+        reply = self.app.post('/login', data={'email': 'example@example.com', 'password': 'admin'})
+        self.assertEqual(reply.status_code, 302)
+        reply = self.app.get('/story/1/dislike')
+        self.assertEqual(reply.status_code, 200)
+        with self.context:
+            l = Dislike.query.filter_by(disliker_id=1, story_id=1).first()
+            self.assertIsNotNone(l)
+        reply = self.app.get('/story/1/remove_dislike')
+        with self.context:
+            l = Dislike.query.filter_by(disliker_id=1, story_id=1).first()
+            self.assertIsNone(l)
+         
+    def test_like_dislike(self):
         reply = self.app.post('/login', data={'email': 'example@example.com', 'password': 'admin'})
         self.assertEqual(reply.status_code, 302)
         reply = self.app.get('/story/1/like')
         self.assertEqual(reply.status_code, 200)
         with self.context:
-            print(Like.query.all())
             l = Like.query.filter_by(liker_id=1, story_id=1).first()
             self.assertIsNotNone(l)
-        reply = self.app.get('/story/1/remove_like')
+            l = Dislike.query.filter_by(disliker_id=1, story_id=1).first()
+            self.assertIsNone(l)
+        reply = self.app.get('/story/1/dislike')
         with self.context:
+            l = Dislike.query.filter_by(disliker_id=1, story_id=1).first()
+            self.assertIsNotNone(l)
             l = Like.query.filter_by(liker_id=1, story_id=1).first()
-            self.assertIsNone(l)       
+            self.assertIsNone(l)
+   
