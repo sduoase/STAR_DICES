@@ -1,1 +1,43 @@
-{{ theme }}
+<html>
+<style>
+    .d_button {
+        /* Draft button */
+        background-color: #0000ff;
+        /* Blue */
+        border: none;
+        color: white;
+        padding: 12px 26px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+    }
+
+    .c_button {
+        /* Confirm button */
+        background-color: #4CAF50;
+        /* Green */
+        border: none;
+        color: white;
+        padding: 12px 26px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+    }
+</style>
+
+<body>
+    <h1 style="text-align: center;">Create your own story</h1>
+    <h3><span style="color: #0000ff;">Choosen theme: <span style="color: #000000;">{{ theme }}</span></span></h3>
+    <h3><span style="color: #0000ff;">Face set:</span><span style="color: #000000;">{{outcome}}</span></h3>
+    <p>
+        <h3><span style="color: #0000ff;">Compose your story here</span></h3>
+    </p>
+    <textarea rows="30" cols="120"></textarea>
+    <br><br>
+    <input class="d_button" type="submit" name="store_story" value="Store Changes">
+    <input class="c_button" type="submit" name="publish" value="Publish">
+</body>
+
+</html>

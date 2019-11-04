@@ -1,5 +1,5 @@
 from flask import Blueprint, redirect, render_template, request
-from monolith.database import db, Story, Like, retrieve_dice_set
+from monolith.database import db, Story, Like, retrieve_dice_set, retrieve_dice_bytheme
 from monolith.auth import admin_required, current_user
 from flask_login import (current_user, login_user, logout_user,
                          login_required)
@@ -79,20 +79,20 @@ def _like(story_id):
     return _stories(message)
 
 # TODO to complete
-@stories.route('/stories/new_story', methods=['GET'])
+@stories.route('/stories/new_story', methods=['GET', 'POST'])
 @login_required
 def new_stories():
-    dice_set = retrieve_dice_set()
-    themes = [dice_set.theme]
-
-    return render_template("new_story.html", themes=themes)
+    if request.method == 'GET':
+        dice_themes = retrieve_dice_bytheme()
+        return render_template("new_story.html", themes=dice_themes)
+    else:
+        return 0
 
 # TODO to complete
-@stories.route('/write_story', methods=['POST'])
+@stories.route('/write_story/<story_id>', methods=['POST', 'GET'])
 @login_required
 def write_story():
     dice_set = retrieve_dice_set()
-    face_set = dice_set.throw()
-    print(request.form)
+    face_set = dice_set.throw()  # TODO add callby 'theme'
 
     return render_template("/write_story.html", theme=request.form["theme"], outcome=face_set)

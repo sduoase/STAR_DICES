@@ -56,6 +56,7 @@ class Story(db.Model):
     theme = db.Column(db.Unicode(128))
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     dice_set_id = db.Column(db.Integer, db.ForeignKey('dice.id'))
+    published = db.Column(db.Boolean, default=False)
     # define foreign key
     author = relationship('User', foreign_keys='Story.author_id')
     dice_set = relationship('Dice', foreign_keys='Story.dice_set_id')
@@ -121,8 +122,7 @@ def _deserialize_dice_set(json_dice_set):
 
 
 def retrieve_dice_set():
-    # dice = db.session.query(Dice).first()
-    dice = db.session.query(Dice).all()
+    dice = db.session.query(Dice).first()
     if dice is None:
         return None
 
@@ -141,3 +141,10 @@ def store_dice_set(dice_set):
 
 def isFollowing(who, by_who):
     return db.session.query(Follow).filter(Follow.followed_by_id == by_who).filter(Follow.user_id == who).count() > 0
+
+def retrieve_dice_bytheme():
+    themes = []
+    for row in db.session.query(Dice.theme.label('theme')).all():
+        themes.append(row.theme)
+
+    return themes
