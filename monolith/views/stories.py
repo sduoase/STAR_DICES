@@ -161,7 +161,7 @@ def new_stories():
             return redirect("../write_story/"+str(stry.id), code=302)
 
         dice_set = retrieve_dice_set(request.form["theme"])
-        face_set = dice_set.throw()
+        face_set = dice_set.throw()[:int(request.form["dice_number"])]
         new_story = Story()
         new_story.author_id = current_user.id
         new_story.theme = request.form["theme"]
