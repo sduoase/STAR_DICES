@@ -1,0 +1,19 @@
+<html>
+
+<body>
+  <h1>Create a new story</h1>
+  <form action="" method="POST">
+    <fieldset>
+      Choose your theme:
+      <select name="theme">
+        {% for theme in themes: %}
+        <option value="{{theme}}">{{theme}}</option>
+        {% endfor %}
+      </select>
+      <br><br>
+      <button type="submit"> Throw Dice! </button>
+    </fieldset>
+  </form>
+</body>
+
+</html>

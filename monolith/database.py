@@ -48,10 +48,12 @@ class Story(db.Model):
     __tablename__ = 'story'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title= db.Column(db.Text(50))
-    text = db.Column(db.Text(1000)) # around 200 (English) words 
+    text = db.Column(db.Text(1000), nullable=True)  # around 200 (English) words
+    rolls_outcome = db.Column(db.Unicode(1000))
+    theme = db.Column(db.Unicode(128))
     date = db.Column(db.DateTime)
-    likes = db.Column(db.Integer) # will store the number of likes, periodically updated in background
-    dislikes = db.Column(db.Integer)
+    likes = db.Column(db.Integer, default=0)
+    dislikes = db.Column(db.Integer, default=0)
     # define foreign key 
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     author = relationship('User', foreign_keys='Story.author_id')
@@ -101,23 +103,35 @@ class Dice(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     serialized_dice_set = db.Column(db.Unicode(1000), nullable=False)
+    theme = db.Column(db.Unicode(128))
 
-def _deserialize_dice_set(json_dice_set):
+def _deserialize_dice_set(json_dice_set, theme):
     dice_set = json.loads(json_dice_set)
-    test = DiceSet.DiceSet([Die.Die(dice) for dice in dice_set])
+    test = DiceSet.DiceSet([Die.Die(dice) for dice in dice_set], theme)
     return test
 
-# At the moment we handle only 1 dice set. In the future more will be available.
-def retrieve_dice_set():
-    dice = db.session.query(Dice).first()
+def retrieve_dice_set(theme=None):
+    if theme == None:
+        dice = db.session.query(Dice).first()
+    else:
+        dice = db.session.query(Dice).filter(Dice.theme==theme).first()
     if dice is None:
         return None
 
     json_dice_set = dice.serialized_dice_set
-    return _deserialize_dice_set(json_dice_set)
+    dice_set = _deserialize_dice_set(json_dice_set, dice_set.theme)
+    return dice_set
+
+def retrieve_themes():
+    themes = []
+    for row in db.session.query(Dice.theme.label('theme')).all():
+        themes.append(row.theme)
+
+    return themes
 
 def store_dice_set(dice_set):
     db_entry = Dice()
+    db_entry.theme = dice_set.theme
     db_entry.serialized_dice_set = json.dumps(dice_set.serialize())
     db.session.add(db_entry)
     db.session.commit()
