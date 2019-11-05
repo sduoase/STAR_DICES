@@ -54,6 +54,7 @@ class Story(db.Model):
     date = db.Column(db.DateTime)
     likes = db.Column(db.Integer, default=0)
     dislikes = db.Column(db.Integer, default=0)
+    published = db.Column(db.Boolean, default=False)
     # define foreign key 
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     author = relationship('User', foreign_keys='Story.author_id')
@@ -119,7 +120,7 @@ def retrieve_dice_set(theme=None):
         return None
 
     json_dice_set = dice.serialized_dice_set
-    dice_set = _deserialize_dice_set(json_dice_set, dice_set.theme)
+    dice_set = _deserialize_dice_set(json_dice_set, dice.theme)
     return dice_set
 
 def retrieve_themes():

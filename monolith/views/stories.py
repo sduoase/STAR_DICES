@@ -1,7 +1,7 @@
 import re
-
+import json
 from flask import Blueprint, redirect, render_template, request, abort
-from monolith.database import db, Story, Like, Dislike
+from monolith.database import db, Story, Like, Dislike, retrieve_themes, retrieve_dice_set
 from monolith.auth import admin_required, current_user
 from flask_login import (current_user, login_user, logout_user,
                          login_required)
@@ -135,7 +135,7 @@ def is_story_valid(story_text, dice_roll):
 @login_required
 def new_stories():
     if request.method == 'GET':
-        dice_themes = retrieve_dice_bytheme()
+        dice_themes = retrieve_themes()
         return render_template("new_story.html", themes=dice_themes)
     else:
         stry = Story.query.filter(Story.author_id == current_user.id).filter(
