@@ -1,10 +1,11 @@
 from monolith.database import db, User, Story
 from monolith import celeryApp
+from celery import shared_task
 
 celery = celeryApp.celery
     
 # Takes the story_id and and a boolean value defining whether or not it has to also decrement dislikes
-@celery.task
+@shared_task
 def async_like(story_id, dislike_present=False):
     try:
         story = db.session.query(Story).filter_by(id=story_id).first()
@@ -17,7 +18,7 @@ def async_like(story_id, dislike_present=False):
     return 1
 
 # Takes the story_id and and a boolean value defining whether or not it has to also decrement likes
-@celery.task
+@shared_task
 def async_dislike(story_id, like_present=False):
     try:
         story = db.session.query(Story).filter_by(id=story_id).first()
@@ -29,7 +30,7 @@ def async_dislike(story_id, like_present=False):
     db.session.commit()
     return 1
     
-@celery.task
+@shared_task
 def async_remove_like(story_id):
     try:
         story = db.session.query(Story).filter_by(id=story_id).first()
@@ -39,7 +40,7 @@ def async_remove_like(story_id):
     db.session.commit()
     return 1
     
-@celery.task  
+@shared_task 
 def async_remove_dislike(story_id):
     try:
         story = db.session.query(Story).filter_by(id=story_id).first()
