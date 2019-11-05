@@ -47,15 +47,22 @@ def create_app(test = False):
             db.session.add(example)
             db.session.commit()
 
-        q = db.session.query(Story).filter(Story.id == 1)
+        q = db.session.query(Story)
         story = q.first()
         if story is None:
             example = Story()
-            example.text = 'Trial story of example admin user :)'
+            example.title= 'Test title'
+            example.text = 'Trial story of example admin user :) but i want to add more words just to test that those will be cut out in the home'
             example.likes = 42
             example.dislikes = 5
             example.author_id = 1
-            print(example)
+            db.session.add(example)
+            example = Story()
+            example.title= 'Test title 2'
+            example.text = 'Trial story 2 of example admin user :) but i want to add more words just to test that those will be cut out in the home'
+            example.likes = 42
+            example.dislikes = 5
+            example.author_id = 1
             db.session.add(example)
             db.session.commit()
 

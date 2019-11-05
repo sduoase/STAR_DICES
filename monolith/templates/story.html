@@ -1,16 +1,20 @@
 <html>
 <body>
-    <h1>Story</h1>
+    {% if story %}
+        <h1 style="display: inline;">{{story.title}}</h1> 
+        <p style="display: inline;">by <a href="/wall/{{story.author_id}}">{{story.author.firstname}} {{story.author.lastname}}</a></p> 
+    {% endif %}
     {% if message %}
-        <p>{{message}}</p>
+        <h5>{{message}}</h5>
     {% endif %}
     {% if story %}
-        <p>{{story.text}}</p>
-        <p>Likes: {{story.likes}} Dislikes: {{story.dislikes}} ({{story.date}})</p>
-        <a href="{{url}}{{story.id}}/like">Like it!</a>
-        <a href="{{url}}{{story.id}}/dislike">Dislike it!</a>
-        <a href="{{url}}{{story.id}}/remove_like">Remove your like</a>
-        <a href="{{url}}{{story.id}}/remove_dislike">Remove your dislike</a>
+        <p style="word-wrap: break-word; max-width: 600;"><i>{{story.text}}</i></p>
+        <p>Likes: {{story.likes}} <a href="{{url}}{{story.id}}/like">Like it!</a> <a href="{{url}}{{story.id}}/remove_like">Remove your like</a></p>
+        <p>Dislikes: {{story.dislikes}} <a href="{{url}}{{story.id}}/dislike">Dislike it!</a> <a href="{{url}}{{story.id}}/remove_dislike">Remove your dislike</a></p>
+        <p>Published on {{story.date}}</p>
+        {% if story.author_id == current_user.id %}
+        <a href="{{story.id}}/delete">Delete</a>
+        {%endif%}
     {% endif %}
   </body>
 </html>

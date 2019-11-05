@@ -1,5 +1,7 @@
+[![Build Status](https://travis-ci.org/sduoase/STAR_DICES.svg?branch=master)](https://travis-ci.org/sduoase/STAR_DICES)
+[![Coverage Status](https://coveralls.io/repos/github/sduoase/STAR_DICES/badge.svg?branch=master)](https://coveralls.io/github/sduoase/STAR_DICES?branch=master)
 # Documentation
-* [API doc](https://docs.google.com/spreadsheets/d/1B6I-gnoz-LEUB3Nxu2pnc9xj-iwYfOphf2pOYdGjRVQ/edit?usp=sharing) 
+* [API doc](https://docs.google.com/spreadsheets/d/1B6I-gnoz-LEUB3Nxu2pnc9xj-iwYfOphf2pOYdGjRVQ/edit?usp=sharing)
 
 # Clone repository
 `git clone https://github.com/sduoase/STAR_DICES.git`

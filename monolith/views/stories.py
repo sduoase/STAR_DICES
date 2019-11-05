@@ -1,3 +1,4 @@
+import re
 from flask import Blueprint, redirect, render_template, request, abort
 from monolith.database import db, Story, Like, Dislike
 from monolith.auth import admin_required, current_user
@@ -17,14 +18,29 @@ def _stories(message=''):
     return render_template("stories.html", message=message, stories=allstories,
                             url="/story/")
 
-@stories.route('/story/<story_id>')
+@stories.route('/story/<int:story_id>')
 @login_required
 def _story(story_id, message=''):
     story = Story.query.filter_by(id=story_id).first()
     if story is None:
         message = 'Story not found'
     return render_template("story.html", message=message, story=story,
-                           url="/story/")
+                           url="/story/", current_user=current_user)
+
+@stories.route('/story/<story_id>/delete')
+@login_required
+def _delete_story(story_id):
+    story = Story.query.filter_by(id=story_id)
+    if story.first() is None:
+        abort(404)
+
+    if story.first().author_id != current_user.id:
+        abort(401)
+    else:
+        story.delete()
+        db.session.commit()
+        message = 'Story sucessfully deleted'
+    return render_template("message.html", message=message)
 
 @stories.route('/random_story')
 @login_required
@@ -34,9 +50,9 @@ def _random_story(message=''):
         # Should not happen.
         message = 'Something went wrong'
     return render_template("story.html", message=message, story=story,
-                           url="/story/")
+                           url="/story/", current_user=current_user)
 
-@stories.route('/story/<story_id>/like')
+@stories.route('/story/<int:story_id>/like')
 @login_required
 def _like(story_id):
     story = Story.query.filter_by(id=story_id).first()
@@ -48,7 +64,6 @@ def _like(story_id):
         new_like = Like()
         new_like.liker_id = current_user.id
         new_like.story_id = story_id
-        new_like.liked_id = story.author_id
         # remove dislike, if present
         d = Dislike.query.filter_by(disliker_id=current_user.id, story_id=story_id).first()
         if d is not None: 
@@ -63,19 +78,18 @@ def _like(story_id):
         message = 'You\'ve already liked this story!'
     return _story(story_id, message)
 
-@stories.route('/story/<story_id>/dislike')
+@stories.route('/story/<int:story_id>/dislike')
 @login_required
 def _dislike(story_id):
     story = Story.query.filter_by(id=story_id).first()
     if story is None:
         abort(404)
-    
+
     q = Dislike.query.filter_by(disliker_id=current_user.id, story_id=story_id)
     if q.first() is None:
         new_dislike = Dislike()
         new_dislike.disliker_id = current_user.id
         new_dislike.story_id = story_id
-        new_dislike.disliked_id = story.author_id
         # remove like, if present
         l = Like.query.filter_by(liker_id=current_user.id, story_id=story_id).first()
         if l is not None:
@@ -90,7 +104,7 @@ def _dislike(story_id):
         message = 'You\'ve already disliked this story!'
     return _story(story_id, message)
 
-@stories.route('/story/<story_id>/remove_like')
+@stories.route('/story/<int:story_id>/remove_like')
 @login_required
 def _remove_like(story_id):
     story = Story.query.filter_by(id=story_id).first()
@@ -108,7 +122,7 @@ def _remove_like(story_id):
     return _story(story_id, message)
     
     
-@stories.route('/story/<story_id>/remove_dislike')
+@stories.route('/story/<int:story_id>/remove_dislike')
 @login_required
 def _remove_dislike(story_id):
     story = Story.query.filter_by(id=story_id).first()
@@ -124,6 +138,12 @@ def _remove_dislike(story_id):
         db.session.commit()
         message = 'You removed your dislike!'
     return _story(story_id, message)
-    
-    
-    
+
+# Function to be called during story publishing.
+# If it return False, stop publishing and return an error message.
+def is_story_valid(story_text, dice_roll):
+    split_story_text = re.findall(r"[\w']+|[.,!?;]", story_text.lower())
+    for word in dice_roll:
+        if word.lower() not in split_story_text:
+            return False
+    return True

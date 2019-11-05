@@ -47,6 +47,7 @@ class User(db.Model):
 class Story(db.Model):
     __tablename__ = 'story'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    title= db.Column(db.Text(50))
     text = db.Column(db.Text(1000)) # around 200 (English) words 
     date = db.Column(db.DateTime)
     likes = db.Column(db.Integer) # will store the number of likes, periodically updated in background
@@ -68,22 +69,16 @@ class Like(db.Model):
     story_id = db.Column(db.Integer, db.ForeignKey('story.id'), primary_key=True)
     author = relationship('Story', foreign_keys='Like.story_id')
 
-    liked_id = db.Column(db.Integer, db.ForeignKey('user.id')) # TODO: duplicated ?
-    liker = relationship('User', foreign_keys='Like.liker_id')
-
     marked = db.Column(db.Boolean, default = False) # True iff it has been counted in Story.likes
     
 class Dislike(db.Model):
     __tablename__ = 'dislike'
     
     disliker_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-    liker = relationship('User', foreign_keys='Dislike.disliker_id')
+    disliker = relationship('User', foreign_keys='Dislike.disliker_id')
 
     story_id = db.Column(db.Integer, db.ForeignKey('story.id'), primary_key=True)
     author = relationship('Story', foreign_keys='Dislike.story_id')
-
-    disliked_id = db.Column(db.Integer, db.ForeignKey('user.id')) # TODO: duplicated ?
-    disliker = relationship('User', foreign_keys='Dislike.disliker_id')
 
     marked = db.Column(db.Boolean, default = False) # True iff it has been counted in Story.likes 
 
@@ -126,3 +121,23 @@ def store_dice_set(dice_set):
     db_entry.serialized_dice_set = json.dumps(dice_set.serialize())
     db.session.add(db_entry)
     db.session.commit()
+
+def isFollowing(who, by_who):
+    return db.session.query(Follow).filter(Follow.followed_by_id == by_who).filter(Follow.user_id == who).count() > 0
+
+def getStats(user_id):
+    stories = db.session.query(Story).filter(Story.author_id == user_id)
+    tot_stories=0
+    tot_likes=0
+    tot_dislikes=0
+    for story in stories:
+        tot_stories+=1
+        tot_likes+=story.likes
+        tot_dislikes+=story.dislikes
+    if tot_stories==0:
+        return 0
+    if tot_likes==0:
+        tot_likes=1
+    if tot_dislikes==0:
+        tot_dislikes=1
+    return (tot_likes/tot_dislikes)/tot_stories

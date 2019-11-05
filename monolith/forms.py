@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 import wtforms as f
 from wtforms.validators import DataRequired, Email, Length
 
+MAX_CHAR_STORY_TITLE = 50
 MAX_CHAR_STORY = 1000
 MIN_CHAR_PWD = 10
 MAX_CHAR_PWD = 20
@@ -25,9 +26,14 @@ class UserForm(FlaskForm):
     display = ['email', 'firstname', 'lastname', 'password', 'dateofbirth']
 
 class StoryForm(FlaskForm):
+    title = f.TextField('text', validators=[DataRequired(),
+                                           Length(-1,
+                                                  MAX_CHAR_STORY_TITLE,
+                                                  message="Reach max number of characters for the title!")
+                                           ])
     text = f.TextField('text', validators=[DataRequired(),
                                            Length(-1,
                                                   MAX_CHAR_STORY,
                                                   message="Reach max number of characters!")
-                                           ]) #TODO: Add check on length (1000 chrs)
+                                           ])
     display = ['text']
