@@ -168,9 +168,12 @@ def write_story(story_id):
         story.text = request.form["text"]
         story.title = request.form["title"]
         story.published = 1 if request.form["store_story"] == "1" else 0
+        if not is_story_valid(story.text, json.loads(story.rolls_outcome)):
+            message = "You must use all the words of the outcome!"
+            return render_template("/write_story.html", theme=story.theme, outcome=story.rolls_outcome, title=story.title, text=story.text, message=message)
         db.session.commit()
 
         if story.published == 1:
             return redirect("../story/"+str(story.id), code=302)
 
-    return render_template("/write_story.html", theme=story.theme, outcome=story.rolls_outcome, title=story.title, text=story.text)
+    return render_template("/write_story.html", theme=story.theme, outcome=story.rolls_outcome, title=story.title, text=story.text, message="")
