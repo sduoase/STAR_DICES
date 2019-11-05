@@ -1,7 +1,8 @@
 class DiceSet:
     # dice must be an array of Die objects.
-    def __init__(self, dice):
+    def __init__(self, dice, theme):
         self.dice = dice
+        self.theme = theme
 
     def throw(self):
         return [die.throw() for die in self.dice]
