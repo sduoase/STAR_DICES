@@ -2,8 +2,9 @@
 {% block content %}
 <body>
   <h1>Storytellers</h1>
-  Hi {{ current_user.firstname }}! <a href="/logout">Logout</a>
-    <h2>Your Stories</h2>
+  <p>Hi {{ current_user.firstname }}! <a href="/logout">Logout</a> </p>
+  <p>Score: {{stats}}</p>
+  <h2>Your Stories</h2>
   {% for story in stories%}
     <ul>
         <li>

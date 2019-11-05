@@ -1,22 +1,27 @@
 from flask import Blueprint, redirect, render_template, request, url_for, abort
 from flask_login import (current_user, login_user, logout_user,
                          login_required)
-from monolith.database import db, User, Story, Follow, isFollowing
+from monolith.database import db, User, Story, Follow, isFollowing, getStats
 from monolith.auth import admin_required, current_user
 from sqlalchemy.exc import IntegrityError
 
 users = Blueprint('users', __name__)
 
 @users.route('/users')
+@login_required
 def _users():
     users = db.session.query(User)
-    return render_template("users.html", users=users)
+    data= []
+    for user in users:
+        story=db.session.query(Story).filter(Story.author_id == user.id).order_by(Story.date.desc()).first()
+        data.append((user, story))
+    return render_template("users.html", data=data)
 
 @users.route('/my_wall')
 @login_required
 def my_wall():
     stories = db.session.query(Story).filter(Story.author_id == current_user.id)
-    return render_template("mywall.html", stories=stories)
+    return render_template("mywall.html", stories=stories, stats=getStats(current_user.id))
 
 @users.route('/wall/<int:author_id>', methods=['GET'])
 @login_required

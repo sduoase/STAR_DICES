@@ -124,3 +124,20 @@ def store_dice_set(dice_set):
 
 def isFollowing(who, by_who):
     return db.session.query(Follow).filter(Follow.followed_by_id == by_who).filter(Follow.user_id == who).count() > 0
+
+def getStats(user_id):
+    stories = db.session.query(Story).filter(Story.author_id == user_id)
+    tot_stories=0
+    tot_likes=0
+    tot_dislikes=0
+    for story in stories:
+        tot_stories+=1
+        tot_likes+=story.likes
+        tot_dislikes+=story.dislikes
+    if tot_stories==0:
+        return 0
+    if tot_likes==0:
+        tot_likes=1
+    if tot_dislikes==0:
+        tot_dislikes=1
+    return (tot_likes/tot_dislikes)/tot_stories
