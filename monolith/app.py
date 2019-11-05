@@ -15,9 +15,11 @@ def create_app(test = False):
     app.config['SECRET_KEY'] = 'ANOTHER ONE'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///storytellers.db'
     if test:
+        app.config['TESTING'] = True
         app.config['CELERY_ALWAYS_EAGER'] = True
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
         app.config['WTF_CSRF_ENABLED'] = False
+        app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
     celery = celeryApp.make_celery(app)
     celeryApp.celery = celery

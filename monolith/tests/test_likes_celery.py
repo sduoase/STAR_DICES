@@ -14,17 +14,26 @@ class TestLikeCelery(unittest.TestCase):
     def tearDown(self):
         with self.context:
             db.drop_all()
-    
+            
+    def test_single_like_debug(self):
+        reply = self.app.post('/login', data={'email': 'example@example.com', 'password': 'admin'})
+        self.assertEqual(reply.status_code, 302)
+        reply = self.app.get('/story/1/like')
+        self.assertEqual(reply.status_code, 200)
+        with self.context:
+            s = Story.query.filter_by(id=1).first()
+            self.assertEqual(s.likes, 43)
+            
     def test_like_remove_like(self):
         reply = self.app.post('/login', data={'email': 'example@example.com', 'password': 'admin'})
         self.assertEqual(reply.status_code, 302)
         reply = self.app.get('/story/1/like')
-        #self.assertEqual(reply.status_code, 200)
+        self.assertEqual(reply.status_code, 200)
         with self.context:
             s = Story.query.filter_by(id=1).first()
             self.assertEqual(s.likes, 43)
         reply = self.app.get('/story/1/remove_like')
-        #self.assertEqual(reply.status_code, 200)
+        self.assertEqual(reply.status_code, 200)
         with self.context:
             s = Story.query.filter_by(id=1).first()
             self.assertEqual(s.likes, 42)
@@ -33,13 +42,13 @@ class TestLikeCelery(unittest.TestCase):
         reply = self.app.post('/login', data={'email': 'example@example.com', 'password': 'admin'})
         self.assertEqual(reply.status_code, 302)
         reply = self.app.get('/story/1/dislike')
-        #self.assertEqual(reply.status_code, 200)
+        self.assertEqual(reply.status_code, 200)
         with self.context:
             s = Story.query.filter_by(id=1).first()
             self.assertEqual(s.dislikes, 6)
             
         reply = self.app.get('/story/1/remove_dislike')
-        #self.assertEqual(reply.status_code, 200)
+        self.assertEqual(reply.status_code, 200)
         with self.context:
             s = Story.query.filter_by(id=1).first()
             self.assertEqual(s.dislikes, 5)
@@ -48,14 +57,14 @@ class TestLikeCelery(unittest.TestCase):
         reply = self.app.post('/login', data={'email': 'example@example.com', 'password': 'admin'})
         self.assertEqual(reply.status_code, 302)
         reply = self.app.get('/story/1/like')
-        #self.assertEqual(reply.status_code, 200)
+        self.assertEqual(reply.status_code, 200)
         with self.context:
             s = Story.query.filter_by(id=1).first()
             self.assertEqual(s.likes, 43)
             self.assertEqual(s.dislikes, 5)
             
         reply = self.app.get('/story/1/dislike')
-        #self.assertEqual(reply.status_code, 200)
+        self.assertEqual(reply.status_code, 200)
         with self.context:
             s = Story.query.filter_by(id=1).first()
             self.assertEqual(s.likes, 42)
