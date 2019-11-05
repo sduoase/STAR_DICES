@@ -1,21 +1,38 @@
 import re
 import json
 from flask import Blueprint, redirect, render_template, request, abort
-from monolith.database import db, Story, Like, Dislike, retrieve_themes, retrieve_dice_set
+from monolith.database import db, Story, Like, Dislike, retrieve_themes, retrieve_dice_set, is_date
 from monolith.auth import admin_required, current_user
 from flask_login import (current_user, login_user, logout_user,
                          login_required)
 from  sqlalchemy.sql.expression import func
+import datetime
 
 stories = Blueprint('stories', __name__)
 
-@stories.route('/')
+@stories.route('/', methods=['GET', 'POST'])
 def _stories(message=''):
     if current_user.is_anonymous:
         return redirect("/login", code=302)
     allstories = db.session.query(Story)
-    return render_template("stories.html", message=message, stories=allstories,
-                            url="/story/")
+
+    
+
+    if request.method == 'POST':
+        
+        beginDate = request.form["beginDate"]
+        if beginDate == "" or not is_date(beginDate):
+            beginDate = str(datetime.date.min)
+        
+        endDate = request.form["endDate"]
+        if endDate == "" or not is_date(endDate):
+            endDate = str(datetime.date.max) # :) :) :)
+
+        filteredStories = allstories.filter(Story.date.between(beginDate, endDate))
+        return render_template("stories.html", message="Filtered stories", stories=filteredStories, url="/story/")
+    else:
+        return render_template("stories.html", message=message, stories=allstories,
+                                url="/story/")
 
 @stories.route('/story/<int:story_id>')
 @login_required
@@ -177,3 +194,4 @@ def write_story(story_id):
             return redirect("../story/"+str(story.id), code=302)
 
     return render_template("/write_story.html", theme=story.theme, outcome=story.rolls_outcome, title=story.title, text=story.text, message="")
+

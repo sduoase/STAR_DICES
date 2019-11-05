@@ -156,3 +156,11 @@ def getStats(user_id):
     if tot_dislikes==0:
         tot_dislikes=1
     return (tot_likes/tot_dislikes)/tot_stories
+
+def is_date(string):
+    try: 
+        dt.datetime.strptime(string, '%Y-%m-%d')
+        return True
+
+    except ValueError:
+        return False
