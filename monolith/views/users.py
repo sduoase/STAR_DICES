@@ -21,7 +21,6 @@ def _users():
 @login_required
 def my_wall():
     stories = db.session.query(Story).filter(Story.author_id == current_user.id)
-    drafts = stories
     return render_template("mywall.html", stories=stories, stats=getStats(current_user.id))
 
 @users.route('/wall/<int:author_id>', methods=['GET'])
@@ -29,7 +28,8 @@ def my_wall():
 def wall(author_id):
     author = User.query.filter_by(id = author_id).first()
     if author is None:
-        abort(404)
+        message = "Ooops.. Writer not found!"
+        return render_template("message.html", message=message)
 
     stories = db.session.query(Story).filter(Story.author_id == author_id).filter_by(published=1)
     return render_template("wall.html", stories=stories, author=author,

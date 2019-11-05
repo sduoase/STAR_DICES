@@ -1,37 +1,21 @@
 import re
 import json
 from flask import Blueprint, redirect, render_template, request, abort
-from monolith.database import db, Story, Like, Dislike, retrieve_themes, retrieve_dice_set, is_date
+from monolith.database import db, Story, Like, Dislike, retrieve_themes, retrieve_dice_set
 from monolith.auth import admin_required, current_user
 from flask_login import (current_user, login_user, logout_user,
                          login_required)
 from  sqlalchemy.sql.expression import func
-import datetime
 
 stories = Blueprint('stories', __name__)
 
-@stories.route('/', methods=['GET', 'POST'])
+@stories.route('/')
 def _stories(message=''):
     if current_user.is_anonymous:
         return redirect("/login", code=302)
-      
     allstories = db.session.query(Story).filter_by(published=1)
-
-    if request.method == 'POST':
-        
-        beginDate = request.form["beginDate"]
-        if beginDate == "" or not is_date(beginDate):
-            beginDate = str(datetime.date.min)
-        
-        endDate = request.form["endDate"]
-        if endDate == "" or not is_date(endDate):
-            endDate = str(datetime.date.max) # :) :) :)
-
-        filteredStories = allstories.filter(Story.date.between(beginDate, endDate))
-        return render_template("stories.html", message="Filtered stories", stories=filteredStories, url="/story/")
-    else:
-        return render_template("stories.html", message=message, stories=allstories,
-                                url="/story/")
+    return render_template("stories.html", message=message, stories=allstories,
+                            url="/story/")
 
 @stories.route('/story/<int:story_id>')
 @login_required
@@ -161,7 +145,7 @@ def new_stories():
             return redirect("../write_story/"+str(stry.id), code=302)
 
         dice_set = retrieve_dice_set(request.form["theme"])
-        face_set = dice_set.throw()[:int(request.form["dice_number"])]
+        face_set = dice_set.throw()
         new_story = Story()
         new_story.author_id = current_user.id
         new_story.theme = request.form["theme"]
@@ -177,7 +161,8 @@ def new_stories():
 def write_story(story_id):
     story = Story.query.get(story_id)
     if story is None:
-        abort(404)
+        message = "Ooops.. Story not found!"
+        return render_template("message.html", message=message)
     if current_user.id != story.author_id:
         abort(401)
     # NOTE If the story is already published i cannot edit nor republish!
@@ -205,4 +190,3 @@ def write_story(story_id):
             return redirect("../", code=302)
 
     return render_template("/write_story.html", theme=story.theme, outcome=story.rolls_outcome, title=story.title, text=story.text, message="")
-
