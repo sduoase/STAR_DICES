@@ -6,18 +6,39 @@ from monolith.auth import admin_required, current_user
 from flask_login import (current_user, login_user, logout_user,
                          login_required)
 from  sqlalchemy.sql.expression import func
+import datetime
 
 stories = Blueprint('stories', __name__)
 
-@stories.route('/')
-def _stories(message='', methods=['GET', 'POST']):
+def is_date(string):
+    try: 
+        datetime.datetime.strptime(string, '%Y-%m-%d')
+        return True
+
+    except ValueError:
+        return False
+
+@stories.route('/', methods=['GET', 'POST'])
+def _stories(message=''):
     if current_user.is_anonymous:
         return redirect("/login", code=302)
+    allstories = db.session.query(Story)
+
+    
+
     if request.method == 'POST':
-        filteredStories = db.session.query(Story).filter().all()
+        
+        beginDate = request.form["beginDate"]
+        if beginDate == "" or not is_date(beginDate):
+            beginDate = str(datetime.date.min)
+        
+        endDate = request.form["endDate"]
+        if endDate == "" or not is_date(endDate):
+            endDate = str(datetime.date.max) # :) :) :)
+
+        filteredStories = allstories.filter(Story.date.between(beginDate, endDate))
         return render_template("stories.html", message="Filtered stories", stories=filteredStories, url="/story/")
     else:
-        allstories = db.session.query(Story)
         return render_template("stories.html", message=message, stories=allstories,
                                 url="/story/")
 
