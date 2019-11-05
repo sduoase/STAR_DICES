@@ -18,7 +18,6 @@ class TestLike(unittest.TestCase):
         reply = self.app.post('/login', data={'email': 'example@example.com', 'password': 'admin'})
         self.assertEqual(reply.status_code, 302)
         reply = self.app.get('/story/1/like')
-        self.assertEqual(reply.status_code, 200)
         with self.context:
             l = Like.query.filter_by(liker_id=1, story_id=1).first()
             self.assertIsNotNone(l)
@@ -37,7 +36,6 @@ class TestLike(unittest.TestCase):
         reply = self.app.post('/login', data={'email': 'example@example.com', 'password': 'admin'})
         self.assertEqual(reply.status_code, 302)
         reply = self.app.get('/story/1/dislike')
-        self.assertEqual(reply.status_code, 200)
         with self.context:
             l = Dislike.query.filter_by(disliker_id=1, story_id=1).first()
             self.assertIsNotNone(l)
@@ -50,7 +48,6 @@ class TestLike(unittest.TestCase):
         reply = self.app.post('/login', data={'email': 'example@example.com', 'password': 'admin'})
         self.assertEqual(reply.status_code, 302)
         reply = self.app.get('/story/1/like')
-        self.assertEqual(reply.status_code, 200)
         with self.context:
             l = Like.query.filter_by(liker_id=1, story_id=1).first()
             self.assertIsNotNone(l)
