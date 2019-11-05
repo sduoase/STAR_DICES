@@ -1,6 +1,15 @@
-<html>
+{% extends "navigation.html" %}
+{% block content %}
 <body>
     <h1>Story List</h1>
+    <form method="POST" action="">
+        <fieldset>
+            <legend>Filter by date</legend>
+            Begin: <input type="date" name="beginDate"> 
+            End: <input type="date" name="endDate"> <br>
+            <input type="submit">
+        </fieldset>
+    </form>
     <h5>{{message}}</h5>
     <ul>
     {% for story in stories: %}
@@ -13,4 +22,4 @@
     {% endfor %}
     </ul>
 </body>
-</html>
+{%endblock%}
