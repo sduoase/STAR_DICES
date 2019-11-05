@@ -9,6 +9,7 @@
         <h5>{{message}}</h5>
     {% endif %}
     {% if story %}
+        <p style="word-wrap: break-word; max-width: 600;"><i>Dice rolls: {{story.rolls_outcome}}</i></p>
         <p style="word-wrap: break-word; max-width: 600;"><i>{{story.text}}</i></p>
         <p>Likes: {{story.likes}} <a href="{{url}}{{story.id}}/like">Like it!</a> <a href="{{url}}{{story.id}}/remove_like">Remove your like</a></p>
         <p>Dislikes: {{story.dislikes}} <a href="{{url}}{{story.id}}/dislike">Dislike it!</a> <a href="{{url}}{{story.id}}/remove_dislike">Remove your dislike</a></p>
