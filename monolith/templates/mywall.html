@@ -9,7 +9,7 @@
     <ul>
         <li>
             <h3 style="display: inline;"> <a href="/story/{{story.id}}">{{story.title}}</a></h3>
-            <p style="display: inline;">Posted on ({{story.date}})</p>
+            <p style="display: inline;">Posted on ({{story.date.date()}})</p>
             <p style="white-space: nowrap;overflow: hidden; text-overflow: ellipsis; max-width: 400px;"><i>"{{story.text}}"</i></p>
             <p>Likes: {{story.likes}} Dislikes: {{story.dislikes}} </p>
         </li>

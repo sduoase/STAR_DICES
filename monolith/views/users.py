@@ -13,7 +13,7 @@ def _users():
     users = db.session.query(User)
     data= []
     for user in users:
-        story=db.session.query(Story).filter(Story.author_id == user.id).order_by(Story.date.desc()).first()
+        story=db.session.query(Story).filter(Story.author_id == user.id).filter_by(published=1).order_by(Story.date.desc()).first()
         data.append((user, story))
     return render_template("users.html", data=data)
 
@@ -30,8 +30,8 @@ def wall(author_id):
     if author is None:
         abort(404)
 
-    stories = Story.query.filter_by(author_id = author_id)
-    return render_template("wall.html", stories=stories, author=author, 
+    stories = db.session.query(Story).filter(Story.author_id == author_id).filter_by(published=1)
+    return render_template("wall.html", stories=stories, author=author,
                             current_user=current_user, alreadyFollowing = isFollowing(author_id, current_user.id))
 
 @users.route('/wall/<int:author_id>/follow', methods=['GET'])

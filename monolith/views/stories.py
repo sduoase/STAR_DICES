@@ -13,7 +13,7 @@ stories = Blueprint('stories', __name__)
 def _stories(message=''):
     if current_user.is_anonymous:
         return redirect("/login", code=302)
-    allstories = db.session.query(Story)
+    allstories = db.session.query(Story).filter_by(published=1)
     return render_template("stories.html", message=message, stories=allstories,
                             url="/story/")
 
@@ -23,6 +23,8 @@ def _story(story_id, message=''):
     story = Story.query.filter_by(id=story_id).first()
     if story is None:
         message = 'Story not found'
+    if story.author_id != current_user.id:
+        abort(401)
     return render_template("story.html", message=message, story=story,
                            url="/story/", current_user=current_user)
 
@@ -44,10 +46,9 @@ def _delete_story(story_id):
 @stories.route('/random_story')
 @login_required
 def _random_story(message=''):
-    story = Story.query.order_by(func.random()).first()
+    story = Story.query.filter(Story.author_id != current_user.id).filter_by(published=1).order_by(func.random()).first()
     if story is None:
-        # Should not happen.
-        message = 'Something went wrong'
+        message = 'Ooops.. No random story for you!'
     return render_template("story.html", message=message, story=story,
                            url="/story/", current_user=current_user)
 
@@ -175,5 +176,7 @@ def write_story(story_id):
 
         if story.published == 1:
             return redirect("../story/"+str(story.id), code=302)
+        elif story.published == 0:
+            return redirect("../", code=302)
 
     return render_template("/write_story.html", theme=story.theme, outcome=story.rolls_outcome, title=story.title, text=story.text, message="")
