@@ -10,12 +10,16 @@ from  sqlalchemy.sql.expression import func
 stories = Blueprint('stories', __name__)
 
 @stories.route('/')
-def _stories(message=''):
+def _stories(message='', methods=['GET', 'POST']):
     if current_user.is_anonymous:
         return redirect("/login", code=302)
-    allstories = db.session.query(Story)
-    return render_template("stories.html", message=message, stories=allstories,
-                            url="/story/")
+    if request.method == 'POST':
+        filteredStories = db.session.query(Story).filter().all()
+        return render_template("stories.html", message="Filtered stories", stories=filteredStories, url="/story/")
+    else:
+        allstories = db.session.query(Story)
+        return render_template("stories.html", message=message, stories=allstories,
+                                url="/story/")
 
 @stories.route('/story/<int:story_id>')
 @login_required
