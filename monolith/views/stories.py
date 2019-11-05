@@ -53,8 +53,9 @@ def _like(story_id):
         d = Dislike.query.filter_by(disliker_id=current_user.id, story_id=story_id).first()
         if d is not None: 
             db.session.delete(d)
-            async_remove_dislike.delay(story_id)
-        async_like.delay(story_id)
+            async_like.delay(story_id, True)
+        else:
+            async_like.delay(story_id)
         db.session.add(new_like)
         db.session.commit()
         message = 'Like added!'
@@ -79,8 +80,9 @@ def _dislike(story_id):
         l = Like.query.filter_by(liker_id=current_user.id, story_id=story_id).first()
         if l is not None:
             db.session.delete(l)
-            async_remove_like.delay(story_id)
-        async_dislike.delay(story_id)
+            async_dislike.delay(story_id, True)
+        else:
+            async_dislike.delay(story_id)
         db.session.add(new_dislike)
         db.session.commit()
         message = 'Dislike added!'

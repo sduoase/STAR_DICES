@@ -26,7 +26,6 @@ def login():
             return redirect('/')
         else:
             return redirect(url_for('auth.login', message="User or Password not correct!"))
-    print(form.errors)
     return render_template('login.html', form=form)
 
 

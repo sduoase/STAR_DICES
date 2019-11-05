@@ -37,6 +37,7 @@ class TestLikeCelery(unittest.TestCase):
         with self.context:
             s = Story.query.filter_by(id=1).first()
             self.assertEqual(s.dislikes, 6)
+            
         reply = self.app.get('/story/1/remove_dislike')
         self.assertEqual(reply.status_code, 200)
         with self.context:
@@ -52,12 +53,12 @@ class TestLikeCelery(unittest.TestCase):
             s = Story.query.filter_by(id=1).first()
             self.assertEqual(s.likes, 43)
             self.assertEqual(s.dislikes, 5)
-        # TODO Why doesn't it queue correctly
+            
         reply = self.app.get('/story/1/dislike')
         self.assertEqual(reply.status_code, 200)
         with self.context:
             s = Story.query.filter_by(id=1).first()
             self.assertEqual(s.likes, 42)
-            self.assertEqual(s.dislikes, 5)
+            self.assertEqual(s.dislikes, 6)
 
         
