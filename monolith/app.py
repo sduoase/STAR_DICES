@@ -8,6 +8,7 @@ from monolith.database import db, User, Story, Dice, retrieve_dice_set, store_di
 from monolith.auth import login_manager
 from monolith.classes import Die, DiceSet
 from monolith import celeryApp
+from monolith.views import blueprints
 
 def create_app(test = False):
     app = Flask(__name__)
@@ -24,7 +25,6 @@ def create_app(test = False):
     celery = celeryApp.make_celery(app)
     celeryApp.celery = celery
     
-    from monolith.views import blueprints
     for bp in blueprints:
         app.register_blueprint(bp)
         bp.app = app

@@ -13,7 +13,6 @@ stories = Blueprint('stories', __name__)
 
 @stories.route('/', methods=['GET', 'POST'])
 def _stories(message=''):
-    #init_db_context.delay()
     if current_user.is_anonymous:
         return redirect("/login", code=302)
     allstories = db.session.query(Story)
