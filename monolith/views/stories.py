@@ -1,16 +1,17 @@
 import re
-
 from flask import Blueprint, redirect, render_template, request, abort
 from monolith.database import db, Story, Like, Dislike
 from monolith.auth import admin_required, current_user
 from flask_login import (current_user, login_user, logout_user,
                          login_required)
-from  sqlalchemy.sql.expression import func
+from sqlalchemy.sql.expression import func
+from monolith.background import async_like, async_dislike, async_remove_like, async_remove_dislike
 
 stories = Blueprint('stories', __name__)
 
 @stories.route('/')
 def _stories(message=''):
+    #init_db_context.delay()
     if current_user.is_anonymous:
         return redirect("/login", code=302)
     allstories = db.session.query(Story)
@@ -67,6 +68,9 @@ def _like(story_id):
         d = Dislike.query.filter_by(disliker_id=current_user.id, story_id=story_id).first()
         if d is not None: 
             db.session.delete(d)
+            async_like.delay(story_id, True)
+        else:
+            async_like.delay(story_id)
         db.session.add(new_like)
         db.session.commit()
         message = 'Like added!'
@@ -90,6 +94,9 @@ def _dislike(story_id):
         l = Like.query.filter_by(liker_id=current_user.id, story_id=story_id).first()
         if l is not None:
             db.session.delete(l)
+            async_dislike.delay(story_id, True)
+        else:
+            async_dislike.delay(story_id)
         db.session.add(new_dislike)
         db.session.commit()
         message = 'Dislike added!'
@@ -100,10 +107,15 @@ def _dislike(story_id):
 @stories.route('/story/<int:story_id>/remove_like')
 @login_required
 def _remove_like(story_id):
+    story = Story.query.filter_by(id=story_id).first()
+    if story is None:
+        abort(404)
+    
     l = Like.query.filter_by(liker_id=current_user.id, story_id=story_id).first()
     if l is None:
         message = 'You have to like it first!'
     else:
+        async_remove_like.delay(story_id)
         db.session.delete(l)
         db.session.commit()
         message = 'You removed your like'
@@ -113,10 +125,15 @@ def _remove_like(story_id):
 @stories.route('/story/<int:story_id>/remove_dislike')
 @login_required
 def _remove_dislike(story_id):
+    story = Story.query.filter_by(id=story_id).first()
+    if story is None:
+        abort(404)
+    
     d = Dislike.query.filter_by(disliker_id=current_user.id, story_id=story_id).first()
     if d is None:
         message = 'You didn\'t dislike it yet..'
     else:
+        async_remove_dislike.delay(story_id)
         db.session.delete(d)
         db.session.commit()
         message = 'You removed your dislike!'
