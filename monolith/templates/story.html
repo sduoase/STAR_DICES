@@ -1,4 +1,5 @@
-<html>
+{% extends "navigation.html" %}
+{% block content %}
 <body>
     {% if story %}
         <h1 style="display: inline;">{{story.title}}</h1> 
@@ -17,4 +18,4 @@
         {%endif%}
     {% endif %}
   </body>
-</html>
+{%endblock%}

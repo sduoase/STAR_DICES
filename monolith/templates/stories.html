@@ -1,4 +1,5 @@
-<html>
+{% extends "navigation.html" %}
+{% block content %}
 <body>
     <h1>Story List</h1>
     <h5>{{message}}</h5>
@@ -13,4 +14,4 @@
     {% endfor %}
     </ul>
 </body>
-</html>
+{%endblock%}

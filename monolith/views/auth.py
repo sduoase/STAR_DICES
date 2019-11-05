@@ -26,7 +26,7 @@ def login():
             return redirect('/')
         else:
             return redirect(url_for('auth.login', message="User or Password not correct!"))
-    return render_template('login.html', form=form)
+    return render_template('login.html', form=form, notlogged=True)
 
 
 @auth.route("/logout")
@@ -51,4 +51,4 @@ def create_user():
             db.session.rollback()
             form.message="Seems like this email is already used"
             
-    return render_template('create_user.html', form=form)
+    return render_template('create_user.html', form=form, notlogged=True)

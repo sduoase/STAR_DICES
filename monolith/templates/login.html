@@ -1,21 +1,23 @@
-<html>
- <body>
-  <form action="" method="POST">
-    {{ form.hidden_tag() }}
-    <dl>
-     {% for field in form.display %}
-     <dt>{{ form[field].label }}</dt>
-     <dd>{{ form[field]() }}</dd>
-       {% if form[field].errors %}
-          {% for e in form[field].errors %}
-           <p class="help-block">{{ e }}</p>
-          {% endfor %}
-       {% endif %}
-     {% endfor %}
-    </dl>
-    <p class="help-block">{{ form.message }}</p>
-    <p>
-    <input type=submit value="Publish">
-  </form>
- </body>
-</html>
+{% extends "navigation.html" %}
+{% block content %}
+  <body>
+    <form action="" method="POST">
+      {{ form.hidden_tag() }}
+      <dl>
+        {% for field in form.display %}
+        <dt>{{ form[field].label }}</dt>
+        <dd>{{ form[field]() }}</dd>
+          {% if form[field].errors %}
+            {% for e in form[field].errors %}
+              <p class="help-block">{{ e }}</p>
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      </dl>
+      <p class="help-block">{{ form.message }}</p>
+      <p>
+      <input type=submit value="Publish">
+    </form>
+  </body>
+{%endblock%}
+
