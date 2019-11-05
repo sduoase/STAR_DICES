@@ -14,19 +14,18 @@ stories = Blueprint('stories', __name__)
 def _stories(message=''):
     if current_user.is_anonymous:
         return redirect("/login", code=302)
-    allstories = db.session.query(Story)
 
-    
+    allstories = db.session.query(Story).filter_by(published=1)
 
     if request.method == 'POST':
-        
+
         beginDate = request.form["beginDate"]
         if beginDate == "" or not is_date(beginDate):
             beginDate = str(datetime.date.min)
-        
+
         endDate = request.form["endDate"]
         if endDate == "" or not is_date(endDate):
-            endDate = str(datetime.date.max) # :) :) :)
+            endDate = str(datetime.date.max)
 
         filteredStories = allstories.filter(Story.date.between(beginDate, endDate))
         return render_template("stories.html", message="Filtered stories", stories=filteredStories, url="/story/")
@@ -40,6 +39,8 @@ def _story(story_id, message=''):
     story = Story.query.filter_by(id=story_id).first()
     if story is None:
         message = 'Story not found'
+    if story.author_id != current_user.id and story.published==0:
+        abort(401)
     return render_template("story.html", message=message, story=story,
                            url="/story/", current_user=current_user)
 
@@ -61,10 +62,9 @@ def _delete_story(story_id):
 @stories.route('/random_story')
 @login_required
 def _random_story(message=''):
-    story = Story.query.order_by(func.random()).first()
+    story = Story.query.filter(Story.author_id != current_user.id).filter_by(published=1).order_by(func.random()).first()
     if story is None:
-        # Should not happen.
-        message = 'Something went wrong'
+        message = 'Ooops.. No random story for you!'
     return render_template("story.html", message=message, story=story,
                            url="/story/", current_user=current_user)
 
@@ -176,7 +176,11 @@ def new_stories():
 @login_required
 def write_story(story_id):
     story = Story.query.get(story_id)
-
+    if story is None:
+        message = "Ooops.. Story not found!"
+        return render_template("message.html", message=message)
+    if current_user.id != story.author_id:
+        abort(401)
     # NOTE If the story is already published i cannot edit nor republish!
     if story.published == 1:
         return redirect("../story/"+str(story.id), code=302)
@@ -185,13 +189,20 @@ def write_story(story_id):
         story.text = request.form["text"]
         story.title = request.form["title"]
         story.published = 1 if request.form["store_story"] == "1" else 0
-        if not is_story_valid(story.text, json.loads(story.rolls_outcome)):
+
+        if story.published and story.title == "":
+            message = "You must complete the title on order to publish the story"
+            return render_template("/write_story.html", theme=story.theme, outcome=story.rolls_outcome,
+                                   title=story.title, text=story.text, message=message)
+
+        if story.published and not is_story_valid(story.text, json.loads(story.rolls_outcome)):
             message = "You must use all the words of the outcome!"
             return render_template("/write_story.html", theme=story.theme, outcome=story.rolls_outcome, title=story.title, text=story.text, message=message)
         db.session.commit()
 
         if story.published == 1:
             return redirect("../story/"+str(story.id), code=302)
+        elif story.published == 0:
+            return redirect("../", code=302)
 
     return render_template("/write_story.html", theme=story.theme, outcome=story.rolls_outcome, title=story.title, text=story.text, message="")
-

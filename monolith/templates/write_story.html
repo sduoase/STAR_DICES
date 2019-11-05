@@ -1,4 +1,6 @@
 <html>
+{% extends "navigation.html" %}
+{% block content %}
 <style>
     .d_button {
         /* Draft button */
@@ -39,9 +41,9 @@
     
         <textarea rows="30" cols="120" name="text">{{text}}</textarea>
         <br><br>
-        <button class="d_button" type="submit" name="store_story" value="0">Store</button>
+        <button class="d_button" type="submit" name="store_story" value="0">Save and exit</button>
         <button class="c_button" type="submit" name="store_story" value="1">Publish</button>
     </form>
 </body>
-
+{% endblock %}
 </html>
