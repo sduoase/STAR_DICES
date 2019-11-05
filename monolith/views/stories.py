@@ -1,7 +1,7 @@
 import re
 import json
 from flask import Blueprint, redirect, render_template, request, abort
-from monolith.database import db, Story, Like, Dislike, retrieve_themes, retrieve_dice_set
+from monolith.database import db, Story, Like, Dislike, retrieve_themes, retrieve_dice_set, is_date
 from monolith.auth import admin_required, current_user
 from flask_login import (current_user, login_user, logout_user,
                          login_required)
@@ -9,14 +9,6 @@ from  sqlalchemy.sql.expression import func
 import datetime
 
 stories = Blueprint('stories', __name__)
-
-def is_date(string):
-    try: 
-        datetime.datetime.strptime(string, '%Y-%m-%d')
-        return True
-
-    except ValueError:
-        return False
 
 @stories.route('/', methods=['GET', 'POST'])
 def _stories(message=''):
@@ -202,3 +194,4 @@ def write_story(story_id):
             return redirect("../story/"+str(story.id), code=302)
 
     return render_template("/write_story.html", theme=story.theme, outcome=story.rolls_outcome, title=story.title, text=story.text, message="")
+
