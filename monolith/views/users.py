@@ -21,6 +21,7 @@ def _users():
 @login_required
 def my_wall():
     stories = db.session.query(Story).filter(Story.author_id == current_user.id)
+    drafts = stories
     return render_template("mywall.html", stories=stories, stats=getStats(current_user.id))
 
 @users.route('/wall/<int:author_id>', methods=['GET'])
