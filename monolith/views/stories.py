@@ -15,7 +15,7 @@ def _stories(message=''):
     if current_user.is_anonymous:
         return redirect("/login", code=302)
 
-    allstories = db.session.query(Story).filter_by(published=1)
+    allstories = db.session.query(Story).filter_by(published=1).order_by(Story.date.desc())
 
     if request.method == 'POST':
 
