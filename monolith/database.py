@@ -108,14 +108,11 @@ class Dice(db.Model):
 
 def _deserialize_dice_set(json_dice_set, theme):
     dice_set = json.loads(json_dice_set)
-    test = DiceSet.DiceSet([Die.Die(dice) for dice in dice_set], theme)
+    test = DiceSet.DiceSet([Die.Die(dice, theme) for dice in dice_set], theme)
     return test
 
-def retrieve_dice_set(theme=None):
-    if theme == None:
-        dice = db.session.query(Dice).first()
-    else:
-        dice = db.session.query(Dice).filter(Dice.theme==theme).first()
+def retrieve_dice_set(theme):
+    dice = db.session.query(Dice).filter(Dice.theme==theme).first()
     if dice is None:
         return None
 

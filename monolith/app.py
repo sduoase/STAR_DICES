@@ -4,14 +4,14 @@ import os
 
 from flask import Flask, jsonify
 
-from monolith.database import db, User, Story, Dice, retrieve_dice_set, store_dice_set
+from monolith.database import db, User, Story, Dice, retrieve_dice_set, retrieve_themes, store_dice_set
 from monolith.auth import login_manager
 from monolith.classes import Die, DiceSet
 from monolith import celeryApp
 from monolith.views import blueprints
 
 def create_app(test = False):
-    app = Flask(__name__)
+    app = Flask(__name__, static_url_path='/static')
     app.config['WTF_CSRF_SECRET_KEY'] = 'A SECRET KEY'
     app.config['SECRET_KEY'] = 'ANOTHER ONE'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///storytellers.db'
@@ -73,16 +73,32 @@ def create_app(test = False):
             db.session.commit()
 
         # Create default dice set.
-        dice_set = retrieve_dice_set()
-        if dice_set is None:
-            die1 = Die.Die(['Dog', 'Cat', 'Horse'])
-            die2 = Die.Die(['Jump', 'Sleep', 'Run'])
-            die3 = Die.Die(['Summer', 'Winter', 'Spring', 'Fall'])
-            die4 = Die.Die(['House', 'Mountain'])
-            dice_set = DiceSet.DiceSet([die1, die2, die3, die4], "theme1")
-            dice_set2 = DiceSet.DiceSet([die1, die2, die3, die4], "theme2")
+        themes = retrieve_themes()
+        if not themes:
+            die1 = Die.Die(
+                ['angry', 'bag', 'bike', 'bird', 'crying', 'moonandstarts'],
+                "E.T. the Extra-Terrestrial"
+            )
+            die2 = Die.Die(
+                ['bug', 'coffee', 'happy', 'letter', 'paws', 'plate'],
+                "Mountain"
+            )
+            die3 = Die.Die(
+                ['caravan', 'clock', 'drink', 'mouth', 'tulip', 'whale'],
+                "Travelers"
+            )
+            die4 = Die.Die(
+                ['baloon', 'bananas', 'cat', 'icecream', 'pencil', 'phone'],
+                "Youth"
+            )
+            dice_set = DiceSet.DiceSet([die1], "E.T. the Extra-Terrestrial")
             store_dice_set(dice_set)
-            store_dice_set(dice_set2)
+            dice_set = DiceSet.DiceSet([die2], "Mountain")
+            store_dice_set(dice_set)
+            dice_set = DiceSet.DiceSet([die3], "Travelers")
+            store_dice_set(dice_set)
+            dice_set = DiceSet.DiceSet([die4], "Youth")
+            store_dice_set(dice_set)
 
     return app
 

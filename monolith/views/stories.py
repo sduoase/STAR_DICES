@@ -244,4 +244,4 @@ def write_story(story_id):
         elif story.published == 0:
             return redirect("../", code=302)
 
-    return render_template("/write_story.html", theme=story.theme, outcome=story.rolls_outcome, title=story.title, text=story.text, message="")
+    return render_template("/write_story.html", theme=story.theme, outcome=json.loads(story.rolls_outcome), title=story.title, text=story.text, message="")
