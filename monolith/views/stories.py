@@ -200,7 +200,7 @@ def write_story(story_id):
         abort(401)
     # NOTE If the story is already published i cannot edit nor republish!
     if story.published == 1:
-        return redirect("../story/"+str(story.id), code=302)
+        return redirect("/story/"+str(story.id), code=302)
 
     if request.method == 'POST':
         story.text = request.form["text"]
@@ -215,6 +215,9 @@ def write_story(story_id):
         if story.published and not is_story_valid(story.text, json.loads(story.rolls_outcome)):
             message = "You must use all the words of the outcome!"
             return render_template("/write_story.html", theme=story.theme, outcome=story.rolls_outcome, title=story.title, text=story.text, message=message)
+        
+        if story.published==0 and (story.title == "None" or len(story.title.replace(" ", ""))==0):
+            story.title="Draft("+str(story.theme)+")" 
         db.session.commit()
 
         if story.published == 1:
