@@ -173,5 +173,5 @@ def get_suggested_stories(user_id):
                                               .filter(Story.id not in likedStories)
                                               .order_by(Story.likes.desc())
                                               .all())
-    suggestedStories = [story for story in suggestedStories if story.theme in lastUsedThemes]
+    suggestedStories = [story for story in suggestedStories if story.theme in lastUsedThemes][:5]
     return suggestedStories
