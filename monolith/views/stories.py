@@ -1,7 +1,7 @@
 import re
 import json
 from flask import Blueprint, redirect, render_template, request, abort
-from monolith.database import db, Story, Like, Dislike, retrieve_themes, retrieve_dice_set, is_date
+from monolith.database import db, Story, Like, Dislike, retrieve_themes, retrieve_dice_set, is_date, Follow
 from monolith.auth import admin_required, current_user
 from flask_login import (current_user, login_user, logout_user,
                          login_required)
@@ -11,12 +11,28 @@ import datetime
 
 stories = Blueprint('stories', __name__)
 
-@stories.route('/', methods=['GET', 'POST'])
+@stories.route('/', methods=['GET'])
+def _myhome(message=''):
+    if current_user.is_anonymous:
+        return redirect("/login", code=302)
+    followingstories= (db.session.query(Story).join(Follow, Story.author_id == Follow.user_id)
+                                             .filter(Follow.followed_by_id == current_user.id)
+                                             .filter(Story.published==1)
+                                             .order_by(Story.date.desc())
+                                             .all())
+
+    return render_template("home.html", message=message, stories=followingstories)
+    
+    
+
+
+
+@stories.route('/explore', methods=['GET', 'POST'])
 def _stories(message=''):
     if current_user.is_anonymous:
         return redirect("/login", code=302)
 
-    allstories = db.session.query(Story).filter_by(published=1)
+    allstories = db.session.query(Story).filter_by(published=1).order_by(Story.date.desc())
 
     if request.method == 'POST':
 
@@ -29,10 +45,9 @@ def _stories(message=''):
             endDate = str(datetime.date.max)
 
         filteredStories = allstories.filter(Story.date.between(beginDate, endDate))
-        return render_template("stories.html", message="Filtered stories", stories=filteredStories, url="/story/")
+        return render_template("explore.html", message="Filtered stories", stories=filteredStories, url="/story/")
     else:
-        return render_template("stories.html", message=message, stories=allstories,
-                                url="/story/")
+        return render_template("explore.html", message=message, stories=allstories)
 
 @stories.route('/story/<int:story_id>')
 @login_required
@@ -40,6 +55,8 @@ def _story(story_id, message=''):
     story = Story.query.filter_by(id=story_id).first()
     if story is None:
         message = 'Story not found'
+    if story.published==0:
+        return redirect("/write_story/"+str(story.id), code=302)
     if story.author_id != current_user.id and story.published==0:
         abort(401)
     return render_template("story.html", message=message, story=story,
@@ -48,7 +65,7 @@ def _story(story_id, message=''):
 @stories.route('/story/<story_id>/delete')
 @login_required
 def _delete_story(story_id):
-    story = Story.query.filter_by(id=story_id)
+    story = Story.query.filter_by(id=story_id).filter_by(published=1)
     if story.first() is None:
         abort(404)
 
@@ -72,7 +89,7 @@ def _random_story(message=''):
 @stories.route('/story/<int:story_id>/like')
 @login_required
 def _like(story_id):
-    story = Story.query.filter_by(id=story_id).first()
+    story = Story.query.filter_by(id=story_id).filter_by(published=1).first()
     if story is None:
         abort(404)
     
@@ -98,7 +115,7 @@ def _like(story_id):
 @stories.route('/story/<int:story_id>/dislike')
 @login_required
 def _dislike(story_id):
-    story = Story.query.filter_by(id=story_id).first()
+    story = Story.query.filter_by(id=story_id).filter_by(published=1).first()
     if story is None:
         abort(404)
 
@@ -200,7 +217,7 @@ def write_story(story_id):
         abort(401)
     # NOTE If the story is already published i cannot edit nor republish!
     if story.published == 1:
-        return redirect("../story/"+str(story.id), code=302)
+        return redirect("/story/"+str(story.id), code=302)
 
     if request.method == 'POST':
         story.text = request.form["text"]
@@ -208,13 +225,16 @@ def write_story(story_id):
         story.published = 1 if request.form["store_story"] == "1" else 0
 
         if story.published and story.title == "":
-            message = "You must complete the title on order to publish the story"
+            message = "You must complete the title in order to publish the story"
             return render_template("/write_story.html", theme=story.theme, outcome=story.rolls_outcome,
                                    title=story.title, text=story.text, message=message)
 
         if story.published and not is_story_valid(story.text, json.loads(story.rolls_outcome)):
             message = "You must use all the words of the outcome!"
             return render_template("/write_story.html", theme=story.theme, outcome=story.rolls_outcome, title=story.title, text=story.text, message=message)
+        
+        if story.published==0 and (story.title == "None" or len(story.title.replace(" ", ""))==0):
+            story.title="Draft("+str(story.theme)+")" 
         db.session.commit()
 
         if story.published == 1:

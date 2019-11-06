@@ -1,16 +1,11 @@
 {% extends "navigation.html" %}
 {% block content %}
 <body>
-    <h1>Story List</h1>
-    <form method="POST" action="">
-        <fieldset>
-            <legend>Filter by date</legend>
-            Begin: <input type="date" name="beginDate"> 
-            End: <input type="date" name="endDate"> <br>
-            <input type="submit">
-        </fieldset>
-    </form>
+    <h1>Home</h1>
     <h5>{{message}}</h5>
+
+    <h3>Your favorite writers's stories</h3>
+    {%if stories%}
     <ul>
     {% for story in stories: %}
         <li>
@@ -21,5 +16,8 @@
         </li>
     {% endfor %}
     </ul>
+    {%else%}
+        <h4>No stories yet from your following writers. <a href="/explore">Try to find new ones!</a></h4>
+    {%endif%}
 </body>
 {%endblock%}
