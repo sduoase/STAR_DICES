@@ -1,7 +1,7 @@
 import re
 import json
 from flask import Blueprint, redirect, render_template, request, abort
-from monolith.database import db, Story, Like, Dislike, retrieve_themes, retrieve_dice_set, is_date
+from monolith.database import db, Story, Like, Dislike, retrieve_themes, retrieve_dice_set, is_date, Follow
 from monolith.auth import admin_required, current_user
 from flask_login import (current_user, login_user, logout_user,
                          login_required)
@@ -10,7 +10,24 @@ import datetime
 
 stories = Blueprint('stories', __name__)
 
-@stories.route('/', methods=['GET', 'POST'])
+@stories.route('/', methods=['GET'])
+def _myhome(message=''):
+    if current_user.is_anonymous:
+        return redirect("/login", code=302)
+    followingstories= (db.session.query(Story).join(Follow, Story.author_id == Follow.user_id)
+                                             .filter(Follow.followed_by_id == current_user.id)
+                                             .filter(Story.published==1)
+                                             .order_by(Story.date.desc())
+                                             .all())
+
+    return render_template("home.html", message=message, stories=followingstories,
+                                url="/story/")
+    
+    
+
+
+
+@stories.route('/explore', methods=['GET', 'POST'])
 def _stories(message=''):
     if current_user.is_anonymous:
         return redirect("/login", code=302)
@@ -28,9 +45,9 @@ def _stories(message=''):
             endDate = str(datetime.date.max)
 
         filteredStories = allstories.filter(Story.date.between(beginDate, endDate))
-        return render_template("stories.html", message="Filtered stories", stories=filteredStories, url="/story/")
+        return render_template("explore.html", message="Filtered stories", stories=filteredStories, url="/story/")
     else:
-        return render_template("stories.html", message=message, stories=allstories,
+        return render_template("explore.html", message=message, stories=allstories,
                                 url="/story/")
 
 @stories.route('/story/<int:story_id>')
