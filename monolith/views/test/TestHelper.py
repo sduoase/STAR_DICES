@@ -4,23 +4,24 @@ from monolith.app import create_app
 from flask_testing import TestCase
  
 class TestHelper(TestCase):
-    def setUp(self):
+    def create_app(self):
         self.app = create_app(test=True)
         self.context = self.app.app_context()
-        self.app = self.app.test_client()
+        self.client = self.app.test_client()
+        return self.app
 
     def tearDown(self):
         with self.context:
             db.drop_all()
 
     def _login(self, email, password, follow_redirects=False):
-        return self.app.post('/login', follow_redirects=follow_redirects, data={
+        return self.client.post('/login', follow_redirects=follow_redirects, data={
             'email': email,
             'password': password
         })
 
     def _signup(self, email, password, first_name, last_name, birthday, follow_redirects=False):
-        return self.app.post('/signup', follow_redirects=follow_redirects, data={
+        return self.client.post('/signup', follow_redirects=follow_redirects, data={
             'email': email,
             'firstname': first_name,
             'lastname': last_name,
@@ -29,4 +30,4 @@ class TestHelper(TestCase):
         })
 
     def _logout(self, follow_redirectsFalse):
-        return self.app.get('/logout', follow_redirects=follow_redirects)
+        return self.client.get('/logout', follow_redirects=follow_redirects)
