@@ -12,14 +12,14 @@ class TestHelper(unittest.TestCase):
         with self.context:
             db.drop_all()
 
-    def _login(self, email, password):
-        return self.app.post('/login', data={
+    def _login(self, email, password, follow_redirects=False):
+        return self.app.post('/login', follow_redirects=follow_redirects, data={
             'email': email,
             'password': password
         })
 
-    def _signup(self, email, password, first_name, last_name, birthday):
-        return self.app.post('/signup', data={
+    def _signup(self, email, password, first_name, last_name, birthday, follow_redirects=False):
+        return self.app.post('/signup', follow_redirects=follow_redirects, data={
             'email': email,
             'firstname': first_name,
             'lastname': last_name,
@@ -27,5 +27,5 @@ class TestHelper(unittest.TestCase):
             'dateofbirth': birthday
         })
 
-    def _logout(self):
-        return self.app.get('/logout')
+    def _logout(self, follow_redirectsFalse):
+        return self.app.get('/logout', follow_redirects=follow_redirects)
