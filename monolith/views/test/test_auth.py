@@ -49,8 +49,8 @@ class TestAuth(TestHelper):
     def test_signup(self):
     
         # error:same email
-        reply = self._signup('example@example.com', 'admin', 'admin', 'giacobbe', '01/04/1006')
-        self.assertRaises(IntegrityError)
+        self._signup('example@example.com', 'adminadmin', 'admin', 'giacobbe', '01/04/1006')
+        self.assert_template_used("create_user.html")
         
         # error:signup while logged in
         reply = self._login('example@example.com', 'admin')
