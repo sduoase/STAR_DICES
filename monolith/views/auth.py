@@ -12,6 +12,7 @@ def login(message=''):
     if not current_user.is_anonymous:
         return redirect("/", code=302)
     form = LoginForm()
+    form.message = message
     if form.validate_on_submit():
         email, password = form.data['email'], form.data['password']
         q = db.session.query(User).filter(User.email == email)
@@ -20,8 +21,7 @@ def login(message=''):
             login_user(user)
             return redirect('/')
         else:
-            message = "User or Password not correct!"
-    form.message = message
+            form.message = "User or Password not correct!"
     return render_template('login.html', form=form, notlogged=True)
 
 
