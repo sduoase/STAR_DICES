@@ -1,8 +1,9 @@
 import unittest
 
 from monolith.app import create_app
+from flask_testing import TestCase
  
-class TestHelper(unittest.TestCase):
+class TestHelper(TestCase):
     def setUp(self):
         self.app = create_app(test=True)
         self.context = self.app.app_context()
