@@ -1,5 +1,3 @@
-import unittest
-
 from monolith.app import create_app
 from monolith.database import db
 from flask_testing import TestCase

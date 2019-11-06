@@ -155,7 +155,7 @@ def getStats(user_id):
         tot_likes=1
     if tot_dislikes==0:
         tot_dislikes=1
-    return (tot_likes/tot_dislikes)/tot_stories
+    return round((tot_likes/tot_dislikes)/tot_stories, 2)
 
 def is_date(string):
     try: 
