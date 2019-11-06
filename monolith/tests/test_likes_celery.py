@@ -10,11 +10,10 @@ class TestLikeCelery(unittest.TestCase):
         self.context = self.app.app_context()
         self.app = self.app.test_client()
         
-    
     def tearDown(self):
         with self.context:
             db.drop_all()
-    
+
     def test_single_like_debug(self):
         reply = self.app.post('/login', data={'email': 'example@example.com', 'password': 'admin'})
         self.assertEqual(reply.status_code, 302)
@@ -23,7 +22,6 @@ class TestLikeCelery(unittest.TestCase):
         with self.context:
             s = Story.query.filter_by(id=1).first()
             self.assertEqual(s.likes, 43)
-            
             
     def test_like_remove_like(self):
         reply = self.app.post('/login', data={'email': 'example@example.com', 'password': 'admin'})

@@ -1,0 +1,28 @@
+<html>
+{% extends "navigation.html" %}
+{% block content %}
+<body>
+  <h1>Create a new story</h1>
+  <form action="" method="POST">
+    <fieldset>
+      Choose your theme:
+      <select name="theme">
+        {% for theme in themes: %}
+        <option value="{{theme}}">{{theme}}</option>
+        {% endfor %}
+      </select>
+      <br><br>
+      Choose number of dice:
+      <select name="dice_number">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+      </select>
+      <br><br>
+      <button type="submit"> Throw Dice! </button>
+    </fieldset>
+  </form>
+</body>
+{% endblock %}
+</html>

@@ -1,22 +1,38 @@
 import re
+import json
 from flask import Blueprint, redirect, render_template, request, abort
-from monolith.database import db, Story, Like, Dislike
+from monolith.database import db, Story, Like, Dislike, retrieve_themes, retrieve_dice_set, is_date
 from monolith.auth import admin_required, current_user
 from flask_login import (current_user, login_user, logout_user,
                          login_required)
-from sqlalchemy.sql.expression import func
 from monolith.background import async_like, async_dislike, async_remove_like, async_remove_dislike
+from  sqlalchemy.sql.expression import func
+import datetime
 
 stories = Blueprint('stories', __name__)
 
-@stories.route('/')
+@stories.route('/', methods=['GET', 'POST'])
 def _stories(message=''):
-    #init_db_context.delay()
     if current_user.is_anonymous:
         return redirect("/login", code=302)
-    allstories = db.session.query(Story)
-    return render_template("stories.html", message=message, stories=allstories,
-                            url="/story/")
+
+    allstories = db.session.query(Story).filter_by(published=1)
+
+    if request.method == 'POST':
+
+        beginDate = request.form["beginDate"]
+        if beginDate == "" or not is_date(beginDate):
+            beginDate = str(datetime.date.min)
+
+        endDate = request.form["endDate"]
+        if endDate == "" or not is_date(endDate):
+            endDate = str(datetime.date.max)
+
+        filteredStories = allstories.filter(Story.date.between(beginDate, endDate))
+        return render_template("stories.html", message="Filtered stories", stories=filteredStories, url="/story/")
+    else:
+        return render_template("stories.html", message=message, stories=allstories,
+                                url="/story/")
 
 @stories.route('/story/<int:story_id>')
 @login_required
@@ -24,6 +40,8 @@ def _story(story_id, message=''):
     story = Story.query.filter_by(id=story_id).first()
     if story is None:
         message = 'Story not found'
+    if story.author_id != current_user.id and story.published==0:
+        abort(401)
     return render_template("story.html", message=message, story=story,
                            url="/story/", current_user=current_user)
 
@@ -45,10 +63,9 @@ def _delete_story(story_id):
 @stories.route('/random_story')
 @login_required
 def _random_story(message=''):
-    story = Story.query.order_by(func.random()).first()
+    story = Story.query.filter(Story.author_id != current_user.id).filter_by(published=1).order_by(func.random()).first()
     if story is None:
-        # Should not happen.
-        message = 'Something went wrong'
+        message = 'Ooops.. No random story for you!'
     return render_template("story.html", message=message, story=story,
                            url="/story/", current_user=current_user)
 
@@ -147,3 +164,62 @@ def is_story_valid(story_text, dice_roll):
         if word.lower() not in split_story_text:
             return False
     return True
+
+@stories.route('/stories/new_story', methods=['GET', 'POST'])
+@login_required
+def new_stories():
+    if request.method == 'GET':
+        dice_themes = retrieve_themes()
+        return render_template("new_story.html", themes=dice_themes)
+    else:
+        stry = Story.query.filter(Story.author_id == current_user.id).filter(
+            Story.published == 0).filter(Story.theme == request.form["theme"]).first()
+        if stry != None:
+            return redirect("../write_story/"+str(stry.id), code=302)
+
+        dice_set = retrieve_dice_set(request.form["theme"])
+        face_set = dice_set.throw()[:int(request.form["dice_number"])]
+        new_story = Story()
+        new_story.author_id = current_user.id
+        new_story.theme = request.form["theme"]
+        new_story.rolls_outcome = json.dumps(face_set)
+        db.session.add(new_story)
+        db.session.flush()
+        db.session.commit()
+        db.session.refresh(new_story)
+        return redirect('/write_story/'+str(new_story.id), code=302)
+
+@stories.route('/write_story/<story_id>', methods=['POST', 'GET'])
+@login_required
+def write_story(story_id):
+    story = Story.query.get(story_id)
+    if story is None:
+        message = "Ooops.. Story not found!"
+        return render_template("message.html", message=message)
+    if current_user.id != story.author_id:
+        abort(401)
+    # NOTE If the story is already published i cannot edit nor republish!
+    if story.published == 1:
+        return redirect("../story/"+str(story.id), code=302)
+
+    if request.method == 'POST':
+        story.text = request.form["text"]
+        story.title = request.form["title"]
+        story.published = 1 if request.form["store_story"] == "1" else 0
+
+        if story.published and story.title == "":
+            message = "You must complete the title on order to publish the story"
+            return render_template("/write_story.html", theme=story.theme, outcome=story.rolls_outcome,
+                                   title=story.title, text=story.text, message=message)
+
+        if story.published and not is_story_valid(story.text, json.loads(story.rolls_outcome)):
+            message = "You must use all the words of the outcome!"
+            return render_template("/write_story.html", theme=story.theme, outcome=story.rolls_outcome, title=story.title, text=story.text, message=message)
+        db.session.commit()
+
+        if story.published == 1:
+            return redirect("../story/"+str(story.id), code=302)
+        elif story.published == 0:
+            return redirect("../", code=302)
+
+    return render_template("/write_story.html", theme=story.theme, outcome=story.rolls_outcome, title=story.title, text=story.text, message="")

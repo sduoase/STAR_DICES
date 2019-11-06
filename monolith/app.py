@@ -8,6 +8,7 @@ from monolith.database import db, User, Story, Dice, retrieve_dice_set, store_di
 from monolith.auth import login_manager
 from monolith.classes import Die, DiceSet
 from monolith import celeryApp
+from monolith.views import blueprints
 
 def create_app(test = False):
     app = Flask(__name__)
@@ -24,7 +25,6 @@ def create_app(test = False):
     celery = celeryApp.make_celery(app)
     celeryApp.celery = celery
     
-    from monolith.views import blueprints
     for bp in blueprints:
         app.register_blueprint(bp)
         bp.app = app
@@ -75,8 +75,10 @@ def create_app(test = False):
             die2 = Die.Die(['Jump', 'Sleep', 'Run'])
             die3 = Die.Die(['Summer', 'Winter', 'Spring', 'Fall'])
             die4 = Die.Die(['House', 'Mountain'])
-            dice_set = DiceSet.DiceSet([die1, die2, die3, die4])
+            dice_set = DiceSet.DiceSet([die1, die2, die3, die4], "theme1")
+            dice_set2 = DiceSet.DiceSet([die1, die2, die3, die4], "theme2")
             store_dice_set(dice_set)
+            store_dice_set(dice_set2)
 
     return app
 

@@ -1,0 +1,49 @@
+<html>
+{% extends "navigation.html" %}
+{% block content %}
+<style>
+    .d_button {
+        /* Draft button */
+        background-color: #0000ff;
+        /* Blue */
+        border: none;
+        color: white;
+        padding: 12px 26px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+    }
+
+    .c_button {
+        /* Confirm button */
+        background-color: #4CAF50;
+        /* Green */
+        border: none;
+        color: white;
+        padding: 12px 26px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+    }
+</style>
+
+<body>
+    <h1 style="text-align: center;">Create your own story</h1>
+    <h2 style="text-align: center;">{{message}}</h2>
+    <h3><span style="color: #0000ff;">Choosen theme: <span style="color: #000000;">{{ theme }}</span></span></h3>
+    <h3><span style="color: #0000ff;">Face set:</span><span style="color: #000000;">{{outcome}}</span></h3>
+    <form action="" method="POST">
+    <p>
+        <h3><span style="color: #0000ff;">Title:</span><input type="text" name="title" value="{{title}}"></h3>
+    </p>
+    
+        <textarea rows="30" cols="120" name="text">{{text}}</textarea>
+        <br><br>
+        <button class="d_button" type="submit" name="store_story" value="0">Save and exit</button>
+        <button class="c_button" type="submit" name="store_story" value="1">Publish</button>
+    </form>
+</body>
+{% endblock %}
+</html>
