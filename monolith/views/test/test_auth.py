@@ -27,7 +27,7 @@ class TestAuth(TestHelper):
         # success: logged in, redirected
         reply = self._login("example@example.com", "admin", True)
         self.assertEqual(reply.status_code, 200)
-        self.assert_template_used("stories.html")
+        self.assert_template_used("home.html")
         
     def test_logout(self):
     
