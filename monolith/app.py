@@ -43,7 +43,10 @@ def create_app():
         if story is None:
             example = Story()
             example.title= 'Test title'
-            example.text = 'Trial story of example admin user :) but i want to add more words just to test that those will be cut out in the home'
+            example.rolls_outcome= '["Cat", "Run", "Spring", "Mountain"]'
+            example.text = 'Trial cat of run admin user :) but i want to pring more words just to test the mountain'
+            example.theme= 'theme1'
+            example.published=1
             example.likes = 42
             example.dislikes = 5
             example.author_id = 1
@@ -51,8 +54,9 @@ def create_app():
             example = Story()
             example.title= 'Test title 2'
             example.text = 'Trial story 2 of example admin user :) but i want to add more words just to test that those will be cut out in the home'
-            example.likes = 42
-            example.dislikes = 5
+            example.theme= 'theme1'
+            example.rolls_outcome= '["Cat", "Jump", "Fall", "House"]'
+            example.published=0
             example.author_id = 1
             db.session.add(example)
             db.session.commit()
