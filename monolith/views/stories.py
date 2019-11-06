@@ -23,7 +23,7 @@ def _myhome(message=''):
     suggestedStories=get_suggested_stories(current_user.id)
     print(suggestedStories)
 
-    return render_template("home.html", message=message, stories=followingstories)
+    return render_template("home.html", message=message, stories=suggestedStories)
     
     
 
