@@ -1,7 +1,7 @@
 import re
 import json
 from flask import Blueprint, redirect, render_template, request, abort
-from monolith.database import db, Story, Like, Dislike, retrieve_themes, retrieve_dice_set, is_date, Follow
+from monolith.database import db, Story, Like, Dislike, retrieve_themes, retrieve_dice_set, is_date, Follow, get_suggested_stories
 from monolith.auth import admin_required, current_user
 from flask_login import (current_user, login_user, logout_user,
                          login_required)
@@ -20,6 +20,8 @@ def _myhome(message=''):
                                              .filter(Story.published==1)
                                              .order_by(Story.date.desc())
                                              .all())
+    suggestedStories=get_suggested_stories(current_user.id)
+    print(suggestedStories)
 
     return render_template("home.html", message=message, stories=followingstories)
     
