@@ -28,5 +28,5 @@ class TestHelper(TestCase):
             'dateofbirth': birthday
         })
 
-    def _logout(self, follow_redirectsFalse):
+    def _logout(self, follow_redirects=False):
         return self.client.get('/logout', follow_redirects=follow_redirects)
