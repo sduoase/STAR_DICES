@@ -5,6 +5,7 @@
     <h5>{{message}}</h5>
 
     <h3>Your favorite writers's stories</h3>
+    {%if stories%}
     <ul>
     {% for story in stories: %}
         <li>
@@ -15,5 +16,8 @@
         </li>
     {% endfor %}
     </ul>
+    {%else%}
+        <h4>No stories yet from your following writers. <a href="/explore">Try to find new ones!</a></h4>
+    {%endif%}
 </body>
 {%endblock%}

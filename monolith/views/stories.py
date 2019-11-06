@@ -20,8 +20,7 @@ def _myhome(message=''):
                                              .order_by(Story.date.desc())
                                              .all())
 
-    return render_template("home.html", message=message, stories=followingstories,
-                                url="/story/")
+    return render_template("home.html", message=message, stories=followingstories)
     
     
 
@@ -47,8 +46,7 @@ def _stories(message=''):
         filteredStories = allstories.filter(Story.date.between(beginDate, endDate))
         return render_template("explore.html", message="Filtered stories", stories=filteredStories, url="/story/")
     else:
-        return render_template("explore.html", message=message, stories=allstories,
-                                url="/story/")
+        return render_template("explore.html", message=message, stories=allstories)
 
 @stories.route('/story/<int:story_id>')
 @login_required
@@ -56,6 +54,8 @@ def _story(story_id, message=''):
     story = Story.query.filter_by(id=story_id).first()
     if story is None:
         message = 'Story not found'
+    if story.published==0:
+        return redirect("/write_story/"+str(story.id), code=302)
     if story.author_id != current_user.id and story.published==0:
         abort(401)
     return render_template("story.html", message=message, story=story,
@@ -64,7 +64,7 @@ def _story(story_id, message=''):
 @stories.route('/story/<story_id>/delete')
 @login_required
 def _delete_story(story_id):
-    story = Story.query.filter_by(id=story_id)
+    story = Story.query.filter_by(id=story_id).filter_by(published=1)
     if story.first() is None:
         abort(404)
 
@@ -88,7 +88,7 @@ def _random_story(message=''):
 @stories.route('/story/<int:story_id>/like')
 @login_required
 def _like(story_id):
-    story = Story.query.filter_by(id=story_id).first()
+    story = Story.query.filter_by(id=story_id).filter_by(published=1).first()
     if story is None:
         abort(404)
     
@@ -111,7 +111,7 @@ def _like(story_id):
 @stories.route('/story/<int:story_id>/dislike')
 @login_required
 def _dislike(story_id):
-    story = Story.query.filter_by(id=story_id).first()
+    story = Story.query.filter_by(id=story_id).filter_by(published=1).first()
     if story is None:
         abort(404)
 
