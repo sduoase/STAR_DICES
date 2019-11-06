@@ -1,8 +1,7 @@
 {% extends "navigation.html" %}
 {% block content %}
 <body>
-    <h1>Storytellers</h1>
-    <p>Welcome to {{author.firstname}} {{author.lastname}} page!</p>
+    <h1>Welcome to {{author.firstname}} {{author.lastname}} page!</h1>
     {% if author.id != current_user.id %}
         {% if alreadyFollowing %}
         <a href="/wall/{{author.id}}/unfollow">Unfollow</a>

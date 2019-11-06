@@ -1,8 +1,7 @@
 {% extends "navigation.html" %}
 {% block content %}
 <body>
-  <h1>Storytellers</h1>
-  <p>Hi {{ current_user.firstname }}! <a href="/logout">Logout</a> </p>
+  <h1>{{current_user.firstname}}'s wall</h1>
   <p>Score: {{stats}}</p>
   <h2>Drafts</h2>
   {% for d in drafts%}
