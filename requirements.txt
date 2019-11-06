@@ -1,11 +1,3 @@
-flask
-flask-login
-celery
-redis
-flask-wtf
-flask-sqlalchemy
-pip-tools
-rabbitmq
 amqp==2.5.1
 atomicwrites==1.3.0
 attrs==19.3.0
@@ -36,7 +28,7 @@ pytz==2019.3
 redis==3.3.11
 six==1.12.0
 SQLAlchemy==1.3.10
--e git+https://github.com/sduoase/HW2_G2.git@32953c9510307175e1bbda75d7c0901d43e191eb#egg=storytellers_monolith
+-e git+https://github.com/sduoase/HW2_G2.git@555dbebffb9545556d370eb29b4365436e4a87fb#egg=storytellers_monolith
 vine==1.3.0
 wcwidth==0.1.7
 Werkzeug==0.16.0
