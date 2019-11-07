@@ -50,7 +50,8 @@ def _stories(message=''):
 def _story(story_id, message=''):
     story = Story.query.filter_by(id=story_id).filter_by(published=1).first()
     if story is None:
-        abort(404)
+        message = "Ooops.. Story not found!"
+        return render_template("message.html", message=message)
 
     rolls_outcome = json.loads(story.rolls_outcome)
     return render_template("story.html", message=message, story=story,
@@ -61,7 +62,8 @@ def _story(story_id, message=''):
 def _delete_story(story_id):
     story = Story.query.filter_by(id=story_id).filter_by(published=1)
     if story.first() is None:
-        abort(404)
+        message = "Ooops.. Story not found!"
+        return render_template("message.html", message=message)
 
     if story.first().author_id != current_user.id:
         abort(401)
@@ -88,7 +90,8 @@ def _random_story(message=''):
 def _like(story_id):
     story = Story.query.filter_by(id=story_id).filter_by(published=1).first()
     if story is None:
-        abort(404)
+        message = "Ooops.. Story not found!"
+        return render_template("message.html", message=message)
     
     q = Like.query.filter_by(liker_id=current_user.id, story_id=story_id)
     if q.first() is None:
@@ -114,7 +117,8 @@ def _like(story_id):
 def _dislike(story_id):
     story = Story.query.filter_by(id=story_id).filter_by(published=1).first()
     if story is None:
-        abort(404)
+        message = "Ooops.. Story not found!"
+        return render_template("message.html", message=message)
 
     q = Dislike.query.filter_by(disliker_id=current_user.id, story_id=story_id)
     if q.first() is None:
@@ -140,7 +144,8 @@ def _dislike(story_id):
 def _remove_like(story_id):
     story = Story.query.filter_by(id=story_id).first()
     if story is None:
-        abort(404)
+        message = "Ooops.. Story not found!"
+        return render_template("message.html", message=message)
     
     l = Like.query.filter_by(liker_id=current_user.id, story_id=story_id).first()
     if l is None:
@@ -158,7 +163,8 @@ def _remove_like(story_id):
 def _remove_dislike(story_id):
     story = Story.query.filter_by(id=story_id).first()
     if story is None:
-        abort(404)
+        message = "Ooops.. Story not found!"
+        return render_template("message.html", message=message)
     
     d = Dislike.query.filter_by(disliker_id=current_user.id, story_id=story_id).first()
     if d is None:
@@ -206,15 +212,13 @@ def new_stories():
 @stories.route('/write_story/<story_id>', methods=['POST', 'GET'])
 @login_required
 def write_story(story_id):
-    story = Story.query.get(story_id)
+    story = Story.query.filter_by(id=story_id).filter_by(published=0).first()
     if story is None:
         message = "Ooops.. Story not found!"
         return render_template("message.html", message=message)
+
     if current_user.id != story.author_id:
         abort(401)
-    # NOTE If the story is already published i cannot edit nor republish!
-    if story.published == 1:
-        return redirect("/story/"+str(story.id), code=302)
 
     rolls_outcome = json.loads(story.rolls_outcome)
     faces = _throw_to_faces(rolls_outcome)
@@ -233,7 +237,7 @@ def write_story(story_id):
             message = "You must use all the words of the outcome!"
             return render_template("/write_story.html", theme=story.theme, outcome=rolls_outcome, title=story.title, text=story.text, message=message)
         
-        if story.published==0 and (story.title == "None" or len(story.title.replace(" ", ""))==0):
+        if story.published == 0 and (story.title == "None" or len(story.title.replace(" ", ""))==0):
             story.title="Draft("+str(story.theme)+")" 
         db.session.commit()
 
