@@ -209,7 +209,7 @@ def _remove_dislike(story_id):
 
 """
 This route requires the user to be logged in and lets the user select the dice set theme
-and the number of dices to be rolled.
+and the number of dice to be rolled.
 If no pending drafts are present with the same selected dice set theme, it redirects 
 to /write_story displaying the dice roll outcome. 
 Otherwise it redirects to /write_story of the pending draft.
