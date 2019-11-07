@@ -65,7 +65,7 @@ def create_app(test = False):
         themes = retrieve_themes()
         if not themes:
             die1 = Die(
-                ['angry', 'bag', 'bike', 'bird', 'crying', 'moonandstarts'],
+                ['angry', 'bag', 'bike', 'bird', 'crying', 'moonandstars'],
                 "N/A"
             )
             die2 = Die(

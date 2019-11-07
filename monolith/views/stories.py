@@ -13,6 +13,11 @@ from sqlalchemy.sql.expression import func
 
 stories = Blueprint('stories', __name__)
 
+"""
+This route returns, if the user is logged in, the list of stories of the followed writers
+and a list of suggested stories that the user could be interested in.
+If not logged, the anonymous user is redirected to the login page.
+"""
 @stories.route('/', methods=['GET'])
 def _myhome(message=''):
     if current_user.is_anonymous:
@@ -25,6 +30,11 @@ def _myhome(message=''):
     suggestedStories=get_suggested_stories(current_user.id)
     return render_template("home.html", message=message, followingstories=followingStories, suggestedstories=suggestedStories)
 
+"""
+This route returns, if the user is logged in, the list of all stories from all users
+in the social network. The POST is used to filters those stories by user picked date.
+If not logged, the anonymous user is redirected to the login page.
+"""
 @stories.route('/explore', methods=['GET', 'POST'])
 def _stories(message=''):
     if current_user.is_anonymous:
@@ -45,6 +55,11 @@ def _stories(message=''):
     else:
         return render_template("explore.html", message=message, stories=allstories)
 
+"""
+This route requires the user to be logged in and returns an entire published story
+with relative dice rolled and author wall link. In the view, the user will find 
+options for like/dislike/delete (if authorized) options.
+"""
 @stories.route('/story/<int:story_id>')
 @login_required
 def _story(story_id, message=''):
@@ -57,6 +72,10 @@ def _story(story_id, message=''):
     return render_template("story.html", message=message, story=story,
                            url="/story/", current_user=current_user, rolls_outcome=rolls_outcome)
 
+"""
+In this route the user must be be logged in, and deletes a published story
+if the author id is the same of the user calling it.
+"""
 @stories.route('/story/<story_id>/delete')
 @login_required
 def _delete_story(story_id):
@@ -72,6 +91,10 @@ def _delete_story(story_id):
         message = 'Story sucessfully deleted'
     return render_template("message.html", message=message)
 
+"""
+This route requires the user to be logged in, and returns a random story
+written from someone else user.
+"""
 @stories.route('/random_story')
 @login_required
 def _random_story(message=''):
@@ -84,6 +107,9 @@ def _random_story(message=''):
     return render_template("story.html", message=message, story=story,
                            url="/story/", current_user=current_user, rolls_outcome=rolls_outcome)
 
+"""
+The route can be used by a logged in user to like a published story.
+"""
 @stories.route('/story/<int:story_id>/like')
 @login_required
 def _like(story_id):
@@ -110,6 +136,9 @@ def _like(story_id):
         message = 'You\'ve already liked this story!'
     return _story(story_id, message)
 
+"""
+The route can be used by a logged in user to dislike a published story.
+"""
 @stories.route('/story/<int:story_id>/dislike')
 @login_required
 def _dislike(story_id):
@@ -136,6 +165,10 @@ def _dislike(story_id):
         message = 'You\'ve already disliked this story!'
     return _story(story_id, message)
 
+"""
+The route can be used by a logged in user to remove a like
+from a published story.
+"""
 @stories.route('/story/<int:story_id>/remove_like')
 @login_required
 def _remove_like(story_id):
@@ -153,7 +186,10 @@ def _remove_like(story_id):
         message = 'You removed your like'
     return _story(story_id, message)
     
-    
+"""
+The route can be used by a logged in user and to remove a dislike
+from a published story.
+"""
 @stories.route('/story/<int:story_id>/remove_dislike')
 @login_required
 def _remove_dislike(story_id):
@@ -171,15 +207,13 @@ def _remove_dislike(story_id):
         message = 'You removed your dislike!'
     return _story(story_id, message)
 
-# Function to be called during story publishing.
-# If it return False, stop publishing and return an error message.
-def is_story_valid(story_text, dice_roll):
-    split_story_text = re.findall(r"[\w']+|[.,!?;]", story_text.lower())
-    for word in dice_roll:
-        if word.lower() not in split_story_text:
-            return False
-    return True
-
+"""
+This route requires the user to be logged in and lets the user select the dice set theme
+and the number of dices to be rolled.
+If no pending drafts are present with the same selected dice set theme, it redirects 
+to /write_story displaying the dice roll outcome. 
+Otherwise it redirects to /write_story of the pending draft.
+"""
 @stories.route('/stories/new_story', methods=['GET', 'POST'])
 @login_required
 def new_stories():
@@ -190,7 +224,7 @@ def new_stories():
         stry = Story.query.filter(Story.author_id == current_user.id).filter(
             Story.published == 0).filter(Story.theme == request.form["theme"]).first()
         if stry != None:
-            return redirect("../write_story/"+str(stry.id), code=302)
+            return redirect("/write_story/"+str(stry.id), code=302)
 
         dice_set = retrieve_dice_set(request.form["theme"])
         face_set = dice_set.throw()[:int(request.form["dice_number"])]
@@ -204,6 +238,11 @@ def new_stories():
         db.session.refresh(new_story)
         return redirect('/write_story/'+str(new_story.id), code=302)
 
+"""
+This route requires the user to be logged in and lets the user write a story or modify 
+a draft while diplaying the related dice roll outcome.
+In both cases the used will be able to save it as draft or publish it.
+"""
 @stories.route('/write_story/<story_id>', methods=['POST', 'GET'])
 @login_required
 def write_story(story_id):
@@ -221,8 +260,8 @@ def write_story(story_id):
         story.text = request.form["text"]
         story.title = request.form["title"]
         story.published = 1 if request.form["store_story"] == "1" else 0
-
-        if story.published == 1 and story.title == "":
+        
+        if story.published == 1 and (story.title == "" or story.title == "None"):
             message = "You must complete the title in order to publish the story"
             return render_template("/write_story.html", theme=story.theme, outcome=rolls_outcome,
                                    title=story.title, text=story.text, message=message)
@@ -241,3 +280,15 @@ def write_story(story_id):
             return redirect("../", code=302)
 
     return render_template("/write_story.html", theme=story.theme, outcome=rolls_outcome, title=story.title, text=story.text, message="")
+
+"""
+Function to be called during story publishing that checks if the story
+contains the rolled dice faces.
+If it return False, stop publishing and return an error message.
+"""
+def is_story_valid(story_text, dice_roll):
+    split_story_text = re.findall(r"[\w']+|[.,!?;]", story_text.lower())
+    for word in dice_roll:
+        if word.lower() not in split_story_text:
+            return False
+    return True
