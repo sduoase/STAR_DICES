@@ -50,7 +50,7 @@ def _stories(message=''):
 def _story(story_id, message=''):
     story = Story.query.filter_by(id=story_id).filter_by(published=1).first()
     if story is None:
-        message = "Ooops.. Story not found!"
+        message = 'Ooops.. Story not found!'
         return render_template("message.html", message=message)
 
     rolls_outcome = json.loads(story.rolls_outcome)
@@ -62,8 +62,7 @@ def _story(story_id, message=''):
 def _delete_story(story_id):
     story = Story.query.filter_by(id=story_id).filter_by(published=1)
     if story.first() is None:
-        message = "Ooops.. Story not found!"
-        return render_template("message.html", message=message)
+        abort(404)
 
     if story.first().author_id != current_user.id:
         abort(401)
@@ -90,8 +89,7 @@ def _random_story(message=''):
 def _like(story_id):
     story = Story.query.filter_by(id=story_id).filter_by(published=1).first()
     if story is None:
-        message = "Ooops.. Story not found!"
-        return render_template("message.html", message=message)
+        abort(404)
     
     q = Like.query.filter_by(liker_id=current_user.id, story_id=story_id)
     if q.first() is None:
@@ -117,8 +115,7 @@ def _like(story_id):
 def _dislike(story_id):
     story = Story.query.filter_by(id=story_id).filter_by(published=1).first()
     if story is None:
-        message = "Ooops.. Story not found!"
-        return render_template("message.html", message=message)
+        abort(404)
 
     q = Dislike.query.filter_by(disliker_id=current_user.id, story_id=story_id)
     if q.first() is None:
@@ -144,8 +141,7 @@ def _dislike(story_id):
 def _remove_like(story_id):
     story = Story.query.filter_by(id=story_id).first()
     if story is None:
-        message = "Ooops.. Story not found!"
-        return render_template("message.html", message=message)
+        abort(404)
     
     l = Like.query.filter_by(liker_id=current_user.id, story_id=story_id).first()
     if l is None:
@@ -163,8 +159,7 @@ def _remove_like(story_id):
 def _remove_dislike(story_id):
     story = Story.query.filter_by(id=story_id).first()
     if story is None:
-        message = "Ooops.. Story not found!"
-        return render_template("message.html", message=message)
+        abort(404)
     
     d = Dislike.query.filter_by(disliker_id=current_user.id, story_id=story_id).first()
     if d is None:
@@ -214,8 +209,7 @@ def new_stories():
 def write_story(story_id):
     story = Story.query.filter_by(id=story_id).filter_by(published=0).first()
     if story is None:
-        message = "Ooops.. Story not found!"
-        return render_template("message.html", message=message)
+        abort(404)
 
     if current_user.id != story.author_id:
         abort(401)
