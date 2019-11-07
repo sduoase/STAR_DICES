@@ -222,9 +222,9 @@ def write_story(story_id):
         story.title = request.form["title"]
         story.published = 1 if request.form["store_story"] == "1" else 0
 
-        if story.published and story.title == "":
+        if story.published == 1 and story.title == "":
             message = "You must complete the title in order to publish the story"
-            return render_template("/write_story.html", theme=story.theme, outcome=story.rolls_outcome,
+            return render_template("/write_story.html", theme=story.theme, outcome=rolls_outcome,
                                    title=story.title, text=story.text, message=message)
 
         if story.published and not is_story_valid(story.text, faces):
