@@ -52,6 +52,7 @@ def follow(author_id):
             db.session.commit()
             message = "Following!"
         except IntegrityError:
+            db.session.rollback()
             message = "Already following!"
     return render_template('message.html', message = message)
 

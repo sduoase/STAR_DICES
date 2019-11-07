@@ -93,3 +93,31 @@ class TestAuth(TestHelper):
 
         reply =  self.client.get('/wall/2/unfollow')
         self.assertEqual(reply.status_code, 404)
+
+    def test_follow_unfollow_existing_user(self):
+        reply = self._signup("test123@test.com", "verysecurepassword", "Test", "Script", "10/10/1999")
+        self.assertEqual(reply.status_code, 302)
+
+        reply = self._login("test123@test.com", "verysecurepassword", True)
+        self.assertEqual(reply.status_code, 200)
+        self.assert_template_used("home.html")
+
+        reply =  self.client.get('/wall/1/follow')
+        self.assertEqual(reply.status_code, 200)
+        self.assert_template_used("message.html")
+        self.assert_context("message", "Following!")
+
+        reply =  self.client.get('/wall/1/follow')
+        self.assertEqual(reply.status_code, 200)
+        self.assert_template_used("message.html")
+        self.assert_context("message", "Already following!")
+
+        reply =  self.client.get('/wall/1/unfollow')
+        self.assertEqual(reply.status_code, 200)
+        self.assert_template_used("message.html")
+        self.assert_context("message", "Unfollowed!")
+
+        reply =  self.client.get('/wall/1/unfollow')
+        self.assertEqual(reply.status_code, 200)
+        self.assert_template_used("message.html")
+        self.assert_context("message", "You were not following that particular user!")
