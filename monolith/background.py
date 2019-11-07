@@ -6,7 +6,11 @@ from celery import shared_task
 
 celery = celeryApp.celery
     
-# Takes the story_id and and a boolean value defining whether or not it has to also decrement dislikes
+'''
+Function used to add to the message queue a like
+story_id is the id of the story to like
+dislike_present represents whether or not to also remove a dislike
+'''
 @shared_task
 def async_like(story_id, dislike_present=False):
     if current_app.config['TESTING']:
@@ -22,8 +26,11 @@ def async_like(story_id, dislike_present=False):
     if current_app.config['TESTING']:
         (current_user.id)
     return 1
-
-# Takes the story_id and and a boolean value defining whether or not it has to also decrement likes
+'''
+Function used to add to the message queue a dislike
+story_id is the id of the story to like
+dislike_present represents whether or not to also remove a like
+'''
 @shared_task
 def async_dislike(story_id, like_present=False):
     if current_app.config['TESTING']:
@@ -39,7 +46,11 @@ def async_dislike(story_id, like_present=False):
     if current_app.config['TESTING']:
         (current_user.id)
     return 1
-    
+
+'''
+Function used to add to the message queue a remove_like
+story_id is the id of the story to remove the like from
+'''  
 @shared_task
 def async_remove_like(story_id):
     if current_app.config['TESTING']:
@@ -54,6 +65,10 @@ def async_remove_like(story_id):
         (current_user.id)
     return 1
     
+'''
+Function used to add to the message queue a remove_dislike
+story_id is the id of the story to remove the dislike from
+'''    
 @shared_task 
 def async_remove_dislike(story_id):
     if current_app.config['TESTING']:
