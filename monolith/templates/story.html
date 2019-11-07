@@ -10,6 +10,8 @@
     {% endif %}
     {% if story %}
         <br></br>
+        <h3>The choosen theme was: <i>{{story.theme}}</i></h3>
+        <br></br>
         {% for face in rolls_outcome %}
         <div style="text-align: center; display: inline-block;">
             <img style="height:100px; width:auto;" src="/{{face[1]}}">

@@ -28,8 +28,8 @@ stories.
 @users.route('/my_wall')
 @login_required
 def my_wall():
-    published = db.session.query(Story).filter(Story.author_id == current_user.id).filter_by(published=1).order_by(Story.date.desc())
-    drafts = db.session.query(Story).filter(Story.author_id == current_user.id).filter_by(published=0).order_by(Story.date.desc())
+    published = db.session.query(Story).filter(Story.author_id == current_user.id).filter_by(published=1).order_by(Story.date.desc()).all()
+    drafts = db.session.query(Story).filter(Story.author_id == current_user.id).filter_by(published=0).order_by(Story.date.desc()).all()
     return render_template("mywall.html", published=published, drafts=drafts, stats=getStats(current_user.id))
 
 """
