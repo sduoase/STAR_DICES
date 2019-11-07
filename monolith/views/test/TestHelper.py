@@ -1,8 +1,8 @@
-from monolith.app import create_app
-from monolith.database import db
-from flask_testing import TestCase
+from monolith.app import create_app # pragma: no cover
+from monolith.database import db # pragma: no cover
+from flask_testing import TestCase # pragma: no cover
  
-class TestHelper(TestCase):
+class TestHelper(TestCase): # pragma: no cover
     def create_app(self):
         self.app = create_app(test=True)
         self.context = self.app.app_context()
