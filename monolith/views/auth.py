@@ -8,7 +8,7 @@ from monolith.forms import LoginForm, UserForm
 auth = Blueprint('auth', __name__)
 
 """
-This API is used to display the form to let the user login.
+This route is used to display the form to let the user login.
 """
 @auth.route('/login', methods=['GET', 'POST'])
 def login(message=''):
@@ -28,7 +28,7 @@ def login(message=''):
     return render_template('login.html', form=form, notlogged=True)
 
 """
-This API is used to let the user logout.
+This route is used to let the user logout.
 """
 @auth.route("/logout")
 @login_required
@@ -37,7 +37,7 @@ def logout():
     return redirect('/')
 
 """
-This API is used to let a new user signup.
+This route is used to let a new user signup.
 """
 @auth.route('/signup', methods=['GET', 'POST'])
 def create_user():
