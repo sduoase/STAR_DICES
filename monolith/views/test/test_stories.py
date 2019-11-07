@@ -83,4 +83,15 @@ class TestAuth(TestHelper):
         self.assert_template_used("story.html")
         self.assert_context("message", "Ooops.. No random story for you!")
         
+    def test_new_story(self):
+        
+        # success: render new_story.html
+        self._login("example@example.com", "admin")
+        reply = self.client.get('/stories/new_story')
+        self.assertEqual(reply.status_code, 200)
+        self.assert_template_used("new_story.html")
+        
+        reply = self.client.post('/stories/new_story', data={ "theme" : "Mountain", "dice_number" : "3"})
+        self.assertEqual(reply.status_code, 302)
+        
         
