@@ -90,7 +90,6 @@ def create_app(test = False):
             store_dice_set(dice_set)
             die = Die(["1", "2", "3"], "test_theme")
             dice_set = DiceSet([die], "test_theme")
-            print(dice_set)
 
     return app
 
