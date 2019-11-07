@@ -2,6 +2,7 @@
 {% block content %}
 <body>
   <h1>My Followers:</h1>
+  {%if followers%}
   <ul>
     {% for follower in followers: %}
     <li>
@@ -9,6 +10,9 @@
     </li>
     {% endfor %}
   </ul>
+  {%else%}
+    <h3>You have no followers</h3>
+  {%endif%}
 </body>
 {%endblock%}
 
