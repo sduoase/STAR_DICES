@@ -3,7 +3,13 @@
 * [API doc](https://docs.google.com/spreadsheets/d/1B6I-gnoz-LEUB3Nxu2pnc9xj-iwYfOphf2pOYdGjRVQ/edit?usp=sharing)
 
 # Clone repository
-`git clone https://github.com/sduoase/STAR_DICES.git`
+1 `git clone https://github.com/sduoase/STAR_DICES.git`
+2 setup the virtual environment and rabbitmq-server
+   * `python -m venv venv`
+   * `. venv/bin/activate`
+   * `pip install -r requirements.txt`
+   * `python setup.py develop`
+   * `apt-get install rabbitmq-server`
 
 # Working on a new story/issue
 1. Create a new branch for that story/issue `git checkout -b branch_name`
