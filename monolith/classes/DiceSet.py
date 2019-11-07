@@ -1,3 +1,6 @@
+def _throw_to_faces(outcomes):
+    return [outcome[0] for outcome in outcomes]
+
 class DiceSet:
     # dice must be an array of Die objects.
     def __init__(self, dice, theme):

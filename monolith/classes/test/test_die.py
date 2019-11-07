@@ -1,25 +1,27 @@
 import unittest
 import random
+import os
 
-from monolith.classes import Die, DiceSet
+from monolith.classes.Die import Die
  
 class TestDie(unittest.TestCase):
 
     def test_empty_die(self):
-        self.assertRaises(ValueError, Die.Die, [])
+        self.assertRaises(ValueError, Die, [], "test_theme")
     
     def test_single_face_die(self):
-        die = Die.Die([1])
-        self.assertEqual(die.throw(), 1)
+        random.seed(0) # 1, 1, 0, 1, 2, ...
+        die = Die(["1"], "test_theme")
+        self.assertEqual(die.throw()[0], "1")
 
     def test_multi_face_die(self):
         random.seed(0) # 1, 1, 0, 1, 2, ...
-        die = Die.Die([1, 2, 3])
-        self.assertEqual(die.throw(), 2)
-        self.assertEqual(die.throw(), 2)
-        self.assertEqual(die.throw(), 1)
-        self.assertEqual(die.throw(), 2)
-        self.assertEqual(die.throw(), 3)
+        die = Die(["1", "2", "3"], "test_theme")
+        self.assertEqual(die.throw()[0], "2")
+        self.assertEqual(die.throw()[0], "2")
+        self.assertEqual(die.throw()[0], "1")
+        self.assertEqual(die.throw()[0], "2")
+        self.assertEqual(die.throw()[0], "3")
 
  
 if __name__ == '__main__':
