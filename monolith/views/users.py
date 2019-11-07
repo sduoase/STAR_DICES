@@ -7,6 +7,10 @@ from sqlalchemy.exc import IntegrityError
 
 users = Blueprint('users', __name__)
 
+"""
+This API returns to a logged user the list of the writers in the social network and
+their last published story (if any).
+"""
 @users.route('/users')
 @login_required
 def _users():
@@ -17,6 +21,10 @@ def _users():
         data.append((user, story))
     return render_template("users.html", data=data)
 
+"""
+This API returns to a logged user his own wall with his score, pending drafts and published 
+stories.
+"""
 @users.route('/my_wall')
 @login_required
 def my_wall():
@@ -24,6 +32,10 @@ def my_wall():
     drafts = db.session.query(Story).filter(Story.author_id == current_user.id).filter_by(published=0).order_by(Story.date.desc())
     return render_template("mywall.html", published=published, drafts=drafts, stats=getStats(current_user.id))
 
+"""
+This API returns to a logged user the public wall of a user, displaying his last 
+published stories.
+"""
 @users.route('/wall/<int:author_id>', methods=['GET'])
 @login_required
 def wall(author_id):
@@ -36,6 +48,9 @@ def wall(author_id):
     return render_template("wall.html", stories=stories, author=author,
                             current_user=current_user, alreadyFollowing = isFollowing(author_id, current_user.id))
 
+"""
+This API let a logged user follow another user.
+"""
 @users.route('/wall/<int:author_id>/follow', methods=['GET'])
 @login_required
 def follow(author_id):
@@ -55,6 +70,9 @@ def follow(author_id):
             message = "Already following!"
     return render_template('message.html', message = message)
 
+"""
+This API let a logged user unfollow a followed user.
+"""
 @users.route('/wall/<int:author_id>/unfollow', methods=['GET'])
 @login_required
 def unfollow(author_id):
@@ -73,6 +91,9 @@ def unfollow(author_id):
             message = "You were not following that particular user!"
     return render_template('message.html', message = message)
 
+"""
+This API let a logged user see his own followers.
+"""
 @users.route('/my_wall/followers', methods=['GET'])
 @login_required
 def my_followers():
