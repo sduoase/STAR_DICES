@@ -106,11 +106,17 @@ class Dice(db.Model):
     serialized_dice_set = db.Column(db.Unicode(1000), nullable=False)
     theme = db.Column(db.Unicode(128))
 
+"""
+This function deserializes a dice set and creates a DiceSet object.
+"""
 def _deserialize_dice_set(json_dice_set, theme):
     dice_set = json.loads(json_dice_set)
     test = DiceSet.DiceSet([Die.Die(dice, theme) for dice in dice_set], theme)
     return test
 
+"""
+This function returns a dice set from the database and deserializes it.
+"""
 def retrieve_dice_set(theme):
     dice = db.session.query(Dice).filter(Dice.theme==theme).first()
     if dice is None:
@@ -120,6 +126,9 @@ def retrieve_dice_set(theme):
     dice_set = _deserialize_dice_set(json_dice_set, dice.theme)
     return dice_set
 
+"""
+This function returns a list of available dice set themes.
+"""
 def retrieve_themes():
     themes = []
     for row in db.session.query(Dice.theme.label('theme')).all():
@@ -127,6 +136,9 @@ def retrieve_themes():
 
     return themes
 
+"""
+This function serializes a new dice set and stores it into the database.
+"""
 def store_dice_set(dice_set):
     db_entry = Dice()
     db_entry.theme = dice_set.theme
@@ -134,11 +146,19 @@ def store_dice_set(dice_set):
     db.session.add(db_entry)
     db.session.commit()
 
+"""
+This function takes in input two user ids. Returns true if the second user
+follows the first. 
+"""
 def isFollowing(who, by_who):
     return db.session.query(Follow).filter(Follow.followed_by_id == by_who).filter(Follow.user_id == who).count() > 0
 
+"""
+This function returns the score of the user taking the sum of all likes received over the number of dislikes,
+divided by the number of published stories.
+"""
 def getStats(user_id):
-    stories = db.session.query(Story).filter(Story.author_id == user_id)
+    stories = db.session.query(Story).filter(Story.author_id == user_id).filter(Story.published==1)
     tot_stories=0
     tot_likes=0
     tot_dislikes=0
@@ -154,6 +174,9 @@ def getStats(user_id):
         tot_dislikes=1
     return round((tot_likes/tot_dislikes)/tot_stories, 2)
 
+"""
+This function is used to check that the input string is a valid date.
+"""
 def is_date(string):
     try: 
         dt.datetime.strptime(string, '%Y-%m-%d')
@@ -161,14 +184,20 @@ def is_date(string):
 
     except ValueError:
         return False
-
+"""
+This function is used to return the top 5 most liked stories that the user could be interested in.
+Returned stories are the ones that the user did not like/dislike yet and that are written with the same themes
+of the last 3 published stories of the user.
+"""
 def get_suggested_stories(user_id):
     lastUsedThemes= [story.theme for story in db.session.query(Story).filter(Story.author_id == user_id).distinct()]
     likedStories= [like.story_id for like in db.session.query(Like).filter(Like.liker_id==user_id)]
+    dislikedStories= [dislike.story_id for dislike in db.session.query(Dislike).filter(Dislike.disliker_id==user_id)]
     suggestedStories= (db.session.query(Story).filter(Story.author_id != user_id)
                                               .filter(Story.published==1)
                                               .order_by(Story.likes.desc())
                                               .all())
     suggestedStories = [story for story in suggestedStories if story.id not in likedStories]
+    suggestedStories = [story for story in suggestedStories if story.id not in dislikedStories]
     suggestedStories = [story for story in suggestedStories if story.theme in lastUsedThemes][:5]
     return suggestedStories
