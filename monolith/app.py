@@ -48,6 +48,18 @@ def create_app(test = False):
             example.set_password('admin')
             db.session.add(example)
             db.session.commit()
+	
+            example = Story()
+            example.title = 'My first story!'
+            example.rolls_outcome = '[["bike", "static/Mountain/bike.PNG"], ["bus", "static/Mountain/bus.PNG"]]'
+            example.text = 'With my bike, I am faster than a bus!!!!'
+            example.theme = 'Mountain'
+            example.published = 1
+            example.likes = 42
+            example.dislikes = 5
+            example.author_id = 1
+            db.session.add(example)
+            db.session.commit() 
 
         # Create dice sets if missing.
         themes = retrieve_themes()
