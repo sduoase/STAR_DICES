@@ -164,11 +164,11 @@ def is_date(string):
 
 def get_suggested_stories(user_id):
     lastUsedThemes= [story.theme for story in db.session.query(Story).filter(Story.author_id == user_id).distinct()]
-    likedStories= [like.liker_id for like in db.session.query(Like).filter(Like.liker_id==user_id)]
+    likedStories= [like.story_id for like in db.session.query(Like).filter(Like.liker_id==user_id)]
     suggestedStories= (db.session.query(Story).filter(Story.author_id != user_id)
                                               .filter(Story.published==1)
-                                              .filter(Story.id not in likedStories)
                                               .order_by(Story.likes.desc())
                                               .all())
-    suggestedStories = [story for story in suggestedStories if story.theme in lastUsedThemes]
+    suggestedStories = [story for story in suggestedStories if story.id not in likedStories]
+    suggestedStories = [story for story in suggestedStories if story.theme in lastUsedThemes][:5]
     return suggestedStories

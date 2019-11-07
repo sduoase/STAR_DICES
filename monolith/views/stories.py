@@ -17,15 +17,13 @@ stories = Blueprint('stories', __name__)
 def _myhome(message=''):
     if current_user.is_anonymous:
         return redirect("/login", code=302)
-    followingstories= (db.session.query(Story).join(Follow, Story.author_id == Follow.user_id)
+    followingStories= (db.session.query(Story).join(Follow, Story.author_id == Follow.user_id)
                                              .filter(Follow.followed_by_id == current_user.id)
                                              .filter(Story.published==1)
                                              .order_by(Story.date.desc())
                                              .all())
     suggestedStories=get_suggested_stories(current_user.id)
-    print(suggestedStories)
-
-    return render_template("home.html", message=message, stories=suggestedStories)
+    return render_template("home.html", message=message, followingstories=followingStories, suggestedstories=suggestedStories)
 
 @stories.route('/explore', methods=['GET', 'POST'])
 def _stories(message=''):
@@ -33,9 +31,7 @@ def _stories(message=''):
         return redirect("/login", code=302)
 
     allstories = db.session.query(Story).filter_by(published=1).order_by(Story.date.desc())
-
     if request.method == 'POST':
-
         beginDate = request.form["beginDate"]
         if beginDate == "" or not is_date(beginDate):
             beginDate = str(datetime.date.min)
