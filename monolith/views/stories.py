@@ -1,15 +1,15 @@
-import re
+import datetime
 import json
+import re
 
-from flask import Blueprint, redirect, render_template, request, abort
 from monolith.database import db, Story, Like, Dislike, retrieve_themes, retrieve_dice_set, is_date, Follow, get_suggested_stories
+from monolith.background import async_like, async_dislike, async_remove_like, async_remove_dislike
 from monolith.auth import admin_required, current_user
 from monolith.classes.DiceSet import _throw_to_faces
-from flask_login import (current_user, login_user, logout_user,
-                         login_required)
-from monolith.background import async_like, async_dislike, async_remove_like, async_remove_dislike
+
+from flask import Blueprint, redirect, render_template, request, abort
+from flask_login import current_user, login_user, logout_user, login_required
 from sqlalchemy.sql.expression import func
-import datetime
 
 stories = Blueprint('stories', __name__)
 
@@ -84,8 +84,11 @@ def _random_story(message=''):
     story = Story.query.filter(Story.author_id != current_user.id).filter_by(published=1).order_by(func.random()).first()
     if story is None:
         message = 'Ooops.. No random story for you!'
+        rolls_outcome = []
+    else:
+        rolls_outcome = json.loads(story.rolls_outcome)
     return render_template("story.html", message=message, story=story,
-                           url="/story/", current_user=current_user)
+                           url="/story/", current_user=current_user, rolls_outcome=rolls_outcome)
 
 @stories.route('/story/<int:story_id>/like')
 @login_required

@@ -6,7 +6,7 @@ class Die:
         if not faces:
             raise ValueError("You must at least specify a face.")
         self.faces = faces
-        self.urls = [os.path.join("static", theme, face + ".PNG") for face in faces]
+        self.urls = ["static/" + theme + "/" + face + ".PNG" for face in faces]
 
     def throw(self):
         face = random.randint(0, len(self.faces) - 1)
