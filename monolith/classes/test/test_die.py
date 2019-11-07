@@ -22,6 +22,10 @@ class TestDie(unittest.TestCase):
         self.assertEqual(die.throw()[0], "1")
         self.assertEqual(die.throw()[0], "2")
         self.assertEqual(die.throw()[0], "3")
+    
+    def test_die_to_str(self):
+        die = Die(["1", "2", "3"], "test_theme")
+        self.assertEqual(str(die), "['1', '2', '3']")
 
  
 if __name__ == '__main__':
