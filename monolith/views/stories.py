@@ -48,13 +48,10 @@ def _stories(message=''):
 @stories.route('/story/<int:story_id>')
 @login_required
 def _story(story_id, message=''):
-    story = Story.query.filter_by(id=story_id).first()
+    story = Story.query.filter_by(id=story_id).filter_by(published=1).first()
     if story is None:
-        message = 'Story not found'
-    if story.published==0:
-        return redirect("/write_story/"+str(story.id), code=302)
-    if story.author_id != current_user.id and story.published==0:
-        abort(401)
+        abort(404)
+
     rolls_outcome = json.loads(story.rolls_outcome)
     return render_template("story.html", message=message, story=story,
                            url="/story/", current_user=current_user, rolls_outcome=rolls_outcome)
