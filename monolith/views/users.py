@@ -8,7 +8,7 @@ from sqlalchemy.exc import IntegrityError
 users = Blueprint('users', __name__)
 
 """
-This API returns to a logged user the list of the writers in the social network and
+This route returns to a logged user the list of the writers in the social network and
 their last published story (if any).
 """
 @users.route('/users')
@@ -22,7 +22,7 @@ def _users():
     return render_template("users.html", data=data)
 
 """
-This API returns to a logged user his own wall with his score, pending drafts and published 
+This route returns to a logged user his own wall with his score, pending drafts and published 
 stories.
 """
 @users.route('/my_wall')
@@ -33,7 +33,7 @@ def my_wall():
     return render_template("mywall.html", published=published, drafts=drafts, stats=getStats(current_user.id))
 
 """
-This API returns to a logged user the public wall of a user, displaying his last 
+This route returns to a logged user the public wall of a user, displaying his last 
 published stories.
 """
 @users.route('/wall/<int:author_id>', methods=['GET'])
@@ -49,7 +49,7 @@ def wall(author_id):
                             current_user=current_user, alreadyFollowing = isFollowing(author_id, current_user.id))
 
 """
-This API let a logged user follow another user.
+This route lets a logged user follow another user.
 """
 @users.route('/wall/<int:author_id>/follow', methods=['GET'])
 @login_required
@@ -72,7 +72,7 @@ def follow(author_id):
     return render_template('message.html', message = message)
 
 """
-This API let a logged user unfollow a followed user.
+This route lets a logged user unfollow a followed user.
 """
 @users.route('/wall/<int:author_id>/unfollow', methods=['GET'])
 @login_required
@@ -93,7 +93,7 @@ def unfollow(author_id):
     return render_template('message.html', message = message)
 
 """
-This API let a logged user see his own followers.
+This route lets a logged user see his own followers.
 """
 @users.route('/my_wall/followers', methods=['GET'])
 @login_required
