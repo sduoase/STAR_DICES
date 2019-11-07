@@ -3,8 +3,8 @@
 * [API doc](https://docs.google.com/spreadsheets/d/1B6I-gnoz-LEUB3Nxu2pnc9xj-iwYfOphf2pOYdGjRVQ/edit?usp=sharing)
 
 # Clone repository
-1 `git clone https://github.com/sduoase/STAR_DICES.git`
-2 setup the virtual environment and rabbitmq-server
+1. `git clone https://github.com/sduoase/STAR_DICES.git`
+2. setup the virtual environment and rabbitmq-server
    * `python -m venv venv`
    * `. venv/bin/activate`
    * `pip install -r requirements.txt`
