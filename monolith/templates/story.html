@@ -9,7 +9,12 @@
         <h5>{{message}}</h5>
     {% endif %}
     {% if story %}
-        <p style="word-wrap: break-word; max-width: 600;"><i>Dice rolls: {{story.rolls_outcome}}</i></p>
+        {% for face in rolls_outcome %}
+            <div style="margin-top:auto; margin-bottom:auto">
+                <img style="text-align: center; vertical-align:middle; display:block; height:100px; width:auto;" src="../{{face[1]}}">
+                <span>{{face[0]}}</span>
+            </div>
+        {% endfor %}
         <p style="word-wrap: break-word; max-width: 600;"><i>{{story.text}}</i></p>
         <p>Likes: {{story.likes}} <a href="{{url}}{{story.id}}/like">Like it!</a> <a href="{{url}}{{story.id}}/remove_like">Remove your like</a></p>
         <p>Dislikes: {{story.dislikes}} <a href="{{url}}{{story.id}}/dislike">Dislike it!</a> <a href="{{url}}{{story.id}}/remove_dislike">Remove your dislike</a></p>

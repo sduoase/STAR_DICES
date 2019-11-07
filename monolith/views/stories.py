@@ -1,12 +1,14 @@
 import re
 import json
+
 from flask import Blueprint, redirect, render_template, request, abort
 from monolith.database import db, Story, Like, Dislike, retrieve_themes, retrieve_dice_set, is_date, Follow, get_suggested_stories
 from monolith.auth import admin_required, current_user
+from monolith.classes.DiceSet import _throw_to_faces
 from flask_login import (current_user, login_user, logout_user,
                          login_required)
 from monolith.background import async_like, async_dislike, async_remove_like, async_remove_dislike
-from  sqlalchemy.sql.expression import func
+from sqlalchemy.sql.expression import func
 import datetime
 
 stories = Blueprint('stories', __name__)
@@ -24,10 +26,6 @@ def _myhome(message=''):
     print(suggestedStories)
 
     return render_template("home.html", message=message, stories=suggestedStories)
-    
-    
-
-
 
 @stories.route('/explore', methods=['GET', 'POST'])
 def _stories(message=''):
@@ -61,8 +59,9 @@ def _story(story_id, message=''):
         return redirect("/write_story/"+str(story.id), code=302)
     if story.author_id != current_user.id and story.published==0:
         abort(401)
+    rolls_outcome = json.loads(story.rolls_outcome)
     return render_template("story.html", message=message, story=story,
-                           url="/story/", current_user=current_user)
+                           url="/story/", current_user=current_user, rolls_outcome=rolls_outcome)
 
 @stories.route('/story/<story_id>/delete')
 @login_required
@@ -221,6 +220,9 @@ def write_story(story_id):
     if story.published == 1:
         return redirect("/story/"+str(story.id), code=302)
 
+    rolls_outcome = json.loads(story.rolls_outcome)
+    faces = _throw_to_faces(rolls_outcome)
+
     if request.method == 'POST':
         story.text = request.form["text"]
         story.title = request.form["title"]
@@ -231,9 +233,9 @@ def write_story(story_id):
             return render_template("/write_story.html", theme=story.theme, outcome=story.rolls_outcome,
                                    title=story.title, text=story.text, message=message)
 
-        if story.published and not is_story_valid(story.text, json.loads(story.rolls_outcome)):
+        if story.published and not is_story_valid(story.text, faces):
             message = "You must use all the words of the outcome!"
-            return render_template("/write_story.html", theme=story.theme, outcome=story.rolls_outcome, title=story.title, text=story.text, message=message)
+            return render_template("/write_story.html", theme=story.theme, outcome=rolls_outcome, title=story.title, text=story.text, message=message)
         
         if story.published==0 and (story.title == "None" or len(story.title.replace(" ", ""))==0):
             story.title="Draft("+str(story.theme)+")" 
@@ -244,4 +246,4 @@ def write_story(story_id):
         elif story.published == 0:
             return redirect("../", code=302)
 
-    return render_template("/write_story.html", theme=story.theme, outcome=json.loads(story.rolls_outcome), title=story.title, text=story.text, message="")
+    return render_template("/write_story.html", theme=story.theme, outcome=rolls_outcome, title=story.title, text=story.text, message="")
