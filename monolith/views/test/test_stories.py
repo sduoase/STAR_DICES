@@ -28,8 +28,6 @@ class TestAuth(TestHelper):
         self.assertEqual(reply.status_code, 200)
         self.assert_template_used("explore.html")
         
-        # TODO DATE FILTER
-        
     def test_single_story(self):
         
         # error: user anonymous
@@ -71,17 +69,6 @@ class TestAuth(TestHelper):
             self.assertIsNone(s)
         
     def test_random_story(self):
-    
-        # success: render the random story
-        self._signup("fantastic@example.com", "betterNerfIrelia", "404", "404", "01/01/1964", True)
-        self._login("fantastic@example.com", "betterNerfIrelia")
-        reply = self.client.post('/stories/new_story', data={ "theme" : "Mountain", "dice_number" : "3"})
-        #TODO publish story first!
-        self._logout()
-        #self._login("example@example.com", "admin")
-        #reply = self.client.get('/random_story')
-        #self.assert_template_used("story.html")
-        #self.assert_context("message", "")
         
         # error: no random story
         self._login("example@example.com", "admin")
@@ -163,18 +150,7 @@ class TestAuth(TestHelper):
                  'text' : "1",
                  'title' : "ThisIsATitle",
                  'store_story' : 0})
-        self.assert_template_used("/write_story.html")
-        
-        # TODO
-        # success: published story
-        #reply = self.client.get('/write_story/2')
-        #self.assertEqual(reply.status_code, 200)
-        #reply = self.client.post('/write_story/2', data={
-        #         'text' : "1",
-        #         'title' : "ThisIsATitle",
-        #         'store_story' : 0})
-        #self.assert_template_used("/write_story.html")
-        
+        self.assert_template_used("/write_story.html")      
         
         
         
