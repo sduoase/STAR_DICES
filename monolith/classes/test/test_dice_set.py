@@ -35,6 +35,3 @@ class TestDie(unittest.TestCase):
         self.assertEqual(_throw_to_faces(dice_set.throw()), ["2", "5"])
         self.assertEqual(_throw_to_faces(dice_set.throw()), ["1", "5"])
         self.assertEqual(_throw_to_faces(dice_set.throw()), ["3", "5"])
- 
-if __name__ == '__main__':
-    unittest.main()

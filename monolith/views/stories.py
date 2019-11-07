@@ -260,13 +260,15 @@ def write_story(story_id):
         story.text = request.form["text"]
         story.title = request.form["title"]
         story.published = 1 if request.form["store_story"] == "1" else 0
-        
+
         if story.published == 1 and (story.title == "" or story.title == "None"):
+            db.session.rollback()
             message = "You must complete the title in order to publish the story"
             return render_template("/write_story.html", theme=story.theme, outcome=rolls_outcome,
                                    title=story.title, text=story.text, message=message)
 
         if story.published and not is_story_valid(story.text, faces):
+            db.session.rollback()
             message = "You must use all the words of the outcome!"
             return render_template("/write_story.html", theme=story.theme, outcome=rolls_outcome, title=story.title, text=story.text, message=message)
         

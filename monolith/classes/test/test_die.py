@@ -26,7 +26,3 @@ class TestDie(unittest.TestCase):
     def test_die_to_str(self):
         die = Die(["1", "2", "3"], "test_theme")
         self.assertEqual(str(die), "['1', '2', '3']")
-
- 
-if __name__ == '__main__':
-    unittest.main()
