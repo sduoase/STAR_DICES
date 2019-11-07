@@ -44,7 +44,3 @@ class TestIsStoryValid(unittest.TestCase):
         dice_roll = ["FOX", "dog", "bROwn"]
         story_text = "The quick BrOwN fox jumps over the lazy DOG"
         self.assertEqual(is_story_valid(story_text, dice_roll), True)
-    
- 
-if __name__ == '__main__':
-    unittest.main()

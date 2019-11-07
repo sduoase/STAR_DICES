@@ -13,7 +13,7 @@ def async_like(story_id, dislike_present=False):
         (current_user.id)
     try:
         story = db.session.query(Story).filter_by(id=story_id).first()
-    except:
+    except: # pragma: no cover
         return -1
     story.likes += 1
     if dislike_present:
@@ -30,7 +30,7 @@ def async_dislike(story_id, like_present=False):
         (current_user.id)
     try:
         story = db.session.query(Story).filter_by(id=story_id).first()
-    except:
+    except: # pragma: no cover
         return -1
     story.dislikes += 1
     if like_present:
@@ -46,7 +46,7 @@ def async_remove_like(story_id):
         (current_user.id)
     try:
         story = db.session.query(Story).filter_by(id=story_id).first()
-    except:
+    except: # pragma: no cover
         return -1
     story.likes -= 1
     db.session.commit()
@@ -60,7 +60,7 @@ def async_remove_dislike(story_id):
         (current_user.id)
     try:
         story = db.session.query(Story).filter_by(id=story_id).first()
-    except:
+    except: # pragma: no cover
         return -1
     story.dislikes -= 1
     db.session.commit()
