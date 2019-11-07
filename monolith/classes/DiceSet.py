@@ -12,6 +12,3 @@ class DiceSet:
 
     def serialize(self):
         return [die.serialize() for die in self.dice]
-
-    def __str__(self):
-        return str(self.dice)
