@@ -4,27 +4,34 @@
   <h1>{{current_user.firstname}}'s wall</h1>
   <p>Score: {{stats}}</p>
   <h2>Drafts</h2>
-  {% for d in drafts%}
-    <ul>
-        <li>
-            <h3 style="display: inline;">{{d.title}}</h3>
-            <p style="display: inline;"><a href="/write_story/{{d.id}}"> Edit</a></p>
-            <p>Firstly created on ({{d.date.strftime("%d/%m/%Y %H:%M")}})</p>
-            <p style="white-space: nowrap;overflow: hidden; text-overflow: ellipsis; max-width: 400px;"><i>"{{d.text}}"</i></p>
-        </li>
-      </ul>
-  {% endfor %}
-
+  {% if drafts %}
+    {% for d in drafts%}
+      <ul>
+          <li>
+              <h3 style="display: inline;">{{d.title}}</h3>
+              <p style="display: inline;"><a href="/write_story/{{d.id}}"> Edit</a></p>
+              <p>Firstly created on ({{d.date.strftime("%d/%m/%Y %H:%M")}})</p>
+              <p style="white-space: nowrap;overflow: hidden; text-overflow: ellipsis; max-width: 400px;"><i>"{{d.text}}"</i></p>
+          </li>
+        </ul>
+    {% endfor %}
+  {% else %}
+    <h4><i>You have no pending drafts</i></h4>
+  {%endif%}
   <h2>Published stories</h2>
-  {% for p in published%}
-    <ul>
-        <li>
-            <h3 style="display: inline;"> <a href="/story/{{p.id}}">{{p.title}}</a></h3>
-            <p style="display: inline;">Posted on ({{p.date.strftime("%d/%m/%Y %H:%M")}})</p>
-            <p style="white-space: nowrap;overflow: hidden; text-overflow: ellipsis; max-width: 400px;"><i>"{{p.text}}"</i></p>
-            <p>Likes: {{p.likes}} Dislikes: {{p.dislikes}} </p>
-        </li>
-      </ul>
-  {% endfor %}
+  {% if published%}
+    {% for p in published%}
+      <ul>
+          <li>
+              <h3 style="display: inline;"> <a href="/story/{{p.id}}">{{p.title}}</a></h3>
+              <p style="display: inline;">Posted on ({{p.date.strftime("%d/%m/%Y %H:%M")}})</p>
+              <p style="white-space: nowrap;overflow: hidden; text-overflow: ellipsis; max-width: 400px;"><i>"{{p.text}}"</i></p>
+              <p>Likes: {{p.likes}} Dislikes: {{p.dislikes}} </p>
+          </li>
+        </ul>
+    {% endfor %}
+  {%else%}
+    <h4><i>You have no stories published</i></h4>
+  {%endif%}
 </body>
 {%endblock%}
