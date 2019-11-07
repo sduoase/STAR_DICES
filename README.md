@@ -17,3 +17,5 @@
 6. Create a pull request selecting the branch you have just created (as compare) `https://github.com/sduoase/STAR_DICES/compare`
 7. Wait for code review and approval
 
+# Running the project
+First run the celery worker which will handle likes/dislikes asynchronously `celery -A monolith.celeryApp.worker.celery worker`, then start the web server `flask run`
