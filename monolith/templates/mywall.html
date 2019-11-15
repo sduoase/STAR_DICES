@@ -3,6 +3,7 @@
 <body>
   <h1>{{current_user.firstname}}'s wall</h1>
   <p>Score: {{stats}}</p>
+  <a href="/my_wall/followers">My Followers</a>
   <h2>Drafts</h2>
   {% if drafts %}
     {% for d in drafts%}
